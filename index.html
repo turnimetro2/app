@@ -1,70 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      font-family: Arial;
-      margin: 0;
-      font-size: 16px;
-      overflow-x: hidden;
-    }
+body {
+  font-family: Arial;
+  margin: 0;
+  font-size: 16px;
+}
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-      margin: auto;
-      padding: 12px;
-    }
+.container {
+  max-width: 480px;
+  margin: auto;
+  padding: 12px;
+}
 
-    input, select, button {
-      width: 100%;
-      margin: 8px 0;
-      padding: 12px;
-      font-size: 16px;
-    }
+input, select, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  font-size: 16px;
+}
 
-    .hidden { display: none; }
+.hidden { display: none; }
 
-    #toast {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 10px;
-      display: none;
-    }
-  </style>
+#toast {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  display: none;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <!-- LOGIN -->
-  <div id="login">
-    <!-- 🔥 SOLO AGGIUNTA TESTO INIZIALE -->
-    <select id="username">
-      <option value="">Caricamento utenti...</option>
-    </select>
+<!-- LOGIN / REGISTER -->
+<div id="authBox">
 
+  <select id="username">
+    <option>Caricamento utenti...</option>
+  </select>
+
+  <!-- LOGIN PIN -->
+  <div id="loginFields">
     <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
-    <button onclick="login()">Login</button>
   </div>
 
-  <!-- DASH -->
-  <div id="dash" class="hidden">
-    <input id="d_user" disabled>
-    <input id="d_pin">
-    <input id="d_email">
-    <input id="d_mat">
-    <button onclick="save()">Salva</button>
+  <!-- REGISTER FIELDS (DINAMICI) -->
+  <div id="registerFields" class="hidden">
+    <input id="email" placeholder="Email">
+    <input id="mat" placeholder="Matricola 5 cifre">
   </div>
+
+  <button onclick="login()">Login</button>
+  <button onclick="register()">Registrati</button>
+
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash" class="hidden">
+  <input id="d_user" disabled>
+  <input id="d_pin">
+  <input id="d_email">
+  <input id="d_mat">
+  <button onclick="save()">Salva</button>
+</div>
 
 </div>
 
@@ -75,6 +85,7 @@
 const API = "https://script.google.com/macros/s/AKfycbxOMv56GlvGjBiROR6u315NyeMlZVhaEvzDy97MW9iyIaScHMJGA9r6Gu3QeOonaz4i/exec";
 
 let currentUser = null;
+let mode = "login";
 
 // ===== TOAST =====
 function toast(t){
@@ -84,7 +95,7 @@ function toast(t){
   setTimeout(()=>el.style.display="none",2000);
 }
 
-// ===== LOAD USERS (IDENTICO AL TUO ORIGINALE) =====
+// ===== LOAD USERS =====
 fetch(API,{
   method:"POST",
   body: JSON.stringify({action:"getUsers"})
@@ -92,7 +103,6 @@ fetch(API,{
 .then(r=>r.json())
 .then(users=>{
   let s=document.getElementById("username");
-
   s.innerHTML='<option value="">Seleziona utente</option>';
 
   users.forEach(u=>{
@@ -101,48 +111,92 @@ fetch(API,{
     o.textContent=u;
     s.appendChild(o);
   });
-})
-.catch(()=>{
-  toast("Errore caricamento utenti");
-  document.getElementById("username").innerHTML =
-    '<option value="">Errore utenti</option>';
 });
+
+// ===== SWITCH MODE =====
+function register(){
+  mode = "register";
+
+  document.getElementById("loginFields").classList.add("hidden");
+  document.getElementById("registerFields").classList.remove("hidden");
+
+  toast("Modalità registrazione");
+}
 
 // ===== LOGIN =====
 function login(){
-  let u=document.getElementById("username").value;
-  let p=document.getElementById("pin").value;
 
-  if(!u){
-    toast("Seleziona utente");
-    return;
-  }
+  let u=username.value;
 
-  if(!/^[0-9]{6}$/.test(p)){
-    toast("PIN deve avere 6 cifre");
-    return;
-  }
+  if(mode === "login"){
+    let p=pin.value;
 
-  fetch(API,{
-    method:"POST",
-    body: JSON.stringify({action:"login",username:u,pin:p})
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.success){
-      toast("Errore login");
+    if(!u){ toast("Seleziona utente"); return; }
+
+    if(!/^[0-9]{6}$/.test(p)){
+      toast("PIN non valido");
       return;
     }
 
-    currentUser=res.user;
-    openDash();
-  });
+    fetch(API,{
+      method:"POST",
+      body: JSON.stringify({action:"login",username:u,pin:p})
+    })
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success){ toast("Errore login"); return; }
+
+      currentUser=res.user;
+      openDash();
+    });
+
+  } else {
+
+    // REGISTER FLOW
+    let email=document.getElementById("email").value;
+    let mat=document.getElementById("mat").value;
+
+    if(!u){ toast("Seleziona utente"); return; }
+
+    if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+      toast("Email non valida");
+      return;
+    }
+
+    if(!/^[1-9][0-9]{4}$/.test(mat)){
+      toast("Matricola non valida");
+      return;
+    }
+
+    fetch(API,{
+      method:"POST",
+      body: JSON.stringify({
+        action:"register",
+        username:u,
+        email:email,
+        matricola:mat
+      })
+    })
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success){
+        toast(res.message || "Utente già registrato");
+        return;
+      }
+
+      toast("Registrazione completata. Email inviata.");
+      mode="login";
+
+      document.getElementById("loginFields").classList.remove("hidden");
+      document.getElementById("registerFields").classList.add("hidden");
+    });
+  }
 }
 
 // ===== DASH =====
 function openDash(){
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("dash").classList.remove("hidden");
+  authBox.classList.add("hidden");
+  dash.classList.remove("hidden");
 
   d_user.value=currentUser.username;
   d_pin.value=currentUser.pin;
@@ -152,23 +206,6 @@ function openDash(){
 
 // ===== SAVE =====
 function save(){
-  let email=d_email.value;
-  let mat=d_mat.value;
-
-  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
-    toast("Email non valida");
-    return;
-  }
-
-  if(!/^[1-9][0-9]{4}$/.test(mat)){
-    toast("Matricola non valida");
-    return;
-  }
-
-  currentUser.pin=d_pin.value;
-  currentUser.email=email;
-  currentUser.matricola=mat;
-
   fetch(API,{
     method:"POST",
     body: JSON.stringify({action:"save",user:currentUser})
