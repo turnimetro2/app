@@ -1,57 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  font-family: Arial;
-  margin: 0;
-  font-size: 18px;
-}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.container {
-  padding: 16px;
-}
+  <style>
+    * {
+      box-sizing: border-box; /* 🔥 fondamentale */
+    }
 
-input, select, button {
-  width: 100%;
-  margin: 10px 0;
-  padding: 16px;
-  font-size: 18px;
-}
+    body {
+      font-family: Arial;
+      margin: 0;
+      font-size: 16px;
+      overflow-x: hidden; /* 🔥 evita scroll orizzontale */
+    }
 
-.hidden { display: none; }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: auto;
+      padding: 12px;
+    }
 
-#toast {
-  position: fixed;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 10px;
-  display: none;
-}
-</style>
+    /* 🔥 FIX INPUT CHE ESCONO */
+    input, select, button {
+      width: 100%;
+      max-width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      display: block;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* 🔥 TOAST MOBILE */
+    #toast {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 14px;
+      max-width: 90%;
+      text-align: center;
+      display: none;
+    }
+
+    /* 🔥 piccoli schermi */
+    @media (max-width: 360px) {
+      body {
+        font-size: 15px;
+      }
+
+      input, select, button {
+        padding: 10px;
+        font-size: 15px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<div id="login">
-  <select id="username"></select>
-  <input id="pin" placeholder="PIN 6 cifre">
-  <button onclick="login()">Login</button>
-</div>
+  <!-- LOGIN -->
+  <div id="login">
+    <select id="username"></select>
+    <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
+    <button onclick="login()">Login</button>
+  </div>
 
-<div id="dash" class="hidden">
-  <input id="d_user" disabled>
-  <input id="d_pin">
-  <input id="d_email">
-  <input id="d_mat">
-  <button onclick="save()">Salva</button>
-</div>
+  <!-- DASHBOARD -->
+  <div id="dash" class="hidden">
+    <input id="d_user" disabled>
+    <input id="d_pin">
+    <input id="d_email">
+    <input id="d_mat">
+    <button onclick="save()">Salva</button>
+  </div>
 
 </div>
 
@@ -59,9 +95,10 @@ input, select, button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbxGhNlyQO1OAOO0DOHrYkh-MQRX5vPgEF1uiNJuPXniNuLOYXrT2n-pZRSthCIJKqyS/exec";
+const API = "YOUR_GAS_URL";
 let currentUser = null;
 
+// ===== TOAST =====
 function toast(t){
   let el = document.getElementById("toast");
   el.innerText = t;
@@ -77,6 +114,8 @@ fetch(API,{
 .then(r=>r.json())
 .then(users=>{
   let s=document.getElementById("username");
+  s.innerHTML='<option value="">Seleziona utente</option>';
+
   users.forEach(u=>{
     let o=document.createElement("option");
     o.value=u;
@@ -90,8 +129,13 @@ function login(){
   let u=document.getElementById("username").value;
   let p=document.getElementById("pin").value;
 
+  if(!u){
+    toast("Seleziona utente");
+    return;
+  }
+
   if(!/^[0-9]{6}$/.test(p)){
-    toast("PIN non valido");
+    toast("PIN deve avere 6 cifre");
     return;
   }
 
@@ -101,7 +145,10 @@ function login(){
   })
   .then(r=>r.json())
   .then(res=>{
-    if(!res.success){ toast("Errore login"); return;}
+    if(!res.success){
+      toast("Errore login");
+      return;
+    }
 
     currentUser=res.user;
     openDash();
@@ -130,7 +177,7 @@ function save(){
   }
 
   if(!/^[1-9][0-9]{4}$/.test(mat)){
-    toast("Matricola non valida");
+    toast("Matricola deve avere 5 cifre e non iniziare con 0");
     return;
   }
 
