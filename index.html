@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  font-size: 18px;
+}
+
+.container {
+  padding: 16px;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 16px;
+  font-size: 18px;
+}
+
+.hidden { display: none; }
+
+#toast {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="login">
+  <select id="username"></select>
+  <input id="pin" placeholder="PIN 6 cifre">
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="dash" class="hidden">
+  <input id="d_user" disabled>
+  <input id="d_pin">
+  <input id="d_email">
+  <input id="d_mat">
+  <button onclick="save()">Salva</button>
+</div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+
+const API = "https://script.google.com/macros/s/AKfycbxGhNlyQO1OAOO0DOHrYkh-MQRX5vPgEF1uiNJuPXniNuLOYXrT2n-pZRSthCIJKqyS/exec";
+let currentUser = null;
+
+function toast(t){
+  let el = document.getElementById("toast");
+  el.innerText = t;
+  el.style.display="block";
+  setTimeout(()=>el.style.display="none",2000);
+}
+
+// ===== LOAD USERS =====
+fetch(API,{
+  method:"POST",
+  body: JSON.stringify({action:"getUsers"})
+})
+.then(r=>r.json())
+.then(users=>{
+  let s=document.getElementById("username");
+  users.forEach(u=>{
+    let o=document.createElement("option");
+    o.value=u;
+    o.textContent=u;
+    s.appendChild(o);
+  });
+});
+
+// ===== LOGIN =====
+function login(){
+  let u=document.getElementById("username").value;
+  let p=document.getElementById("pin").value;
+
+  if(!/^[0-9]{6}$/.test(p)){
+    toast("PIN non valido");
+    return;
+  }
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({action:"login",username:u,pin:p})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success){ toast("Errore login"); return;}
+
+    currentUser=res.user;
+    openDash();
+  });
+}
+
+// ===== DASH =====
+function openDash(){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("dash").classList.remove("hidden");
+
+  d_user.value=currentUser.username;
+  d_pin.value=currentUser.pin;
+  d_email.value=currentUser.email;
+  d_mat.value=currentUser.matricola;
+}
+
+// ===== SAVE =====
+function save(){
+  let email=d_email.value;
+  let mat=d_mat.value;
+
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+    toast("Email non valida");
+    return;
+  }
+
+  if(!/^[1-9][0-9]{4}$/.test(mat)){
+    toast("Matricola non valida");
+    return;
+  }
+
+  currentUser.pin=d_pin.value;
+  currentUser.email=email;
+  currentUser.matricola=mat;
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({action:"save",user:currentUser})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    toast(res.success?"Salvato":"Errore");
+  });
+}
+
+</script>
+
+</body>
+</html>
