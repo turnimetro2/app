@@ -22,14 +22,10 @@
 
     input, select, button {
       width: 100%;
-      max-width: 100%;
       margin: 8px 0;
       padding: 12px;
       font-size: 16px;
-      display: block;
     }
-
-    button { cursor: pointer; }
 
     .hidden { display: none; }
 
@@ -40,10 +36,7 @@
       transform: translateX(-50%);
       background: #333;
       color: #fff;
-      padding: 10px 12px;
-      font-size: 14px;
-      max-width: 90%;
-      text-align: center;
+      padding: 10px;
       display: none;
     }
   </style>
@@ -53,12 +46,18 @@
 
 <div class="container">
 
+  <!-- LOGIN -->
   <div id="login">
-    <select id="username"></select>
+    <!-- 🔥 SOLO AGGIUNTA TESTO INIZIALE -->
+    <select id="username">
+      <option value="">Caricamento utenti...</option>
+    </select>
+
     <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
     <button onclick="login()">Login</button>
   </div>
 
+  <!-- DASH -->
   <div id="dash" class="hidden">
     <input id="d_user" disabled>
     <input id="d_pin">
@@ -73,29 +72,27 @@
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbwH-ONAYxxwcMT5kolACIYEQT2bqBgYppwgqhgz97Cd9LIsvz3qYDWB8SEASix8nDtT/exec";
+const API = "https://script.google.com/macros/s/AKfycbxOMv56GlvGjBiROR6u315NyeMlZVhaEvzDy97MW9iyIaScHMJGA9r6Gu3QeOonaz4i/exec";
 
 let currentUser = null;
 
 // ===== TOAST =====
 function toast(t){
-  let el = document.getElementById("toast");
-  el.innerText = t;
+  let el=document.getElementById("toast");
+  el.innerText=t;
   el.style.display="block";
   setTimeout(()=>el.style.display="none",2000);
 }
 
-// ===== LOAD USERS (FIX QUI) =====
+// ===== LOAD USERS (IDENTICO AL TUO ORIGINALE) =====
 fetch(API,{
   method:"POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
   body: JSON.stringify({action:"getUsers"})
 })
 .then(r=>r.json())
 .then(users=>{
   let s=document.getElementById("username");
+
   s.innerHTML='<option value="">Seleziona utente</option>';
 
   users.forEach(u=>{
@@ -105,7 +102,11 @@ fetch(API,{
     s.appendChild(o);
   });
 })
-.catch(()=>toast("Errore caricamento utenti"));
+.catch(()=>{
+  toast("Errore caricamento utenti");
+  document.getElementById("username").innerHTML =
+    '<option value="">Errore utenti</option>';
+});
 
 // ===== LOGIN =====
 function login(){
@@ -124,9 +125,6 @@ function login(){
 
   fetch(API,{
     method:"POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({action:"login",username:u,pin:p})
   })
   .then(r=>r.json())
@@ -163,7 +161,7 @@ function save(){
   }
 
   if(!/^[1-9][0-9]{4}$/.test(mat)){
-    toast("Matricola deve avere 5 cifre e non iniziare con 0");
+    toast("Matricola non valida");
     return;
   }
 
@@ -173,9 +171,6 @@ function save(){
 
   fetch(API,{
     method:"POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({action:"save",user:currentUser})
   })
   .then(r=>r.json())
