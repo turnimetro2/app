@@ -4,15 +4,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * {
-      box-sizing: border-box; /* 🔥 fondamentale */
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: Arial;
       margin: 0;
       font-size: 16px;
-      overflow-x: hidden; /* 🔥 evita scroll orizzontale */
+      overflow-x: hidden;
     }
 
     .container {
@@ -22,7 +20,6 @@
       padding: 12px;
     }
 
-    /* 🔥 FIX INPUT CHE ESCONO */
     input, select, button {
       width: 100%;
       max-width: 100%;
@@ -32,15 +29,10 @@
       display: block;
     }
 
-    button {
-      cursor: pointer;
-    }
+    button { cursor: pointer; }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
-    /* 🔥 TOAST MOBILE */
     #toast {
       position: fixed;
       bottom: 10px;
@@ -54,18 +46,6 @@
       text-align: center;
       display: none;
     }
-
-    /* 🔥 piccoli schermi */
-    @media (max-width: 360px) {
-      body {
-        font-size: 15px;
-      }
-
-      input, select, button {
-        padding: 10px;
-        font-size: 15px;
-      }
-    }
   </style>
 </head>
 
@@ -73,14 +53,12 @@
 
 <div class="container">
 
-  <!-- LOGIN -->
   <div id="login">
     <select id="username"></select>
     <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
     <button onclick="login()">Login</button>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="dash" class="hidden">
     <input id="d_user" disabled>
     <input id="d_pin">
@@ -96,6 +74,7 @@
 <script>
 
 const API = "https://script.google.com/macros/s/AKfycbxOMv56GlvGjBiROR6u315NyeMlZVhaEvzDy97MW9iyIaScHMJGA9r6Gu3QeOonaz4i/exec";
+
 let currentUser = null;
 
 // ===== TOAST =====
@@ -106,9 +85,12 @@ function toast(t){
   setTimeout(()=>el.style.display="none",2000);
 }
 
-// ===== LOAD USERS =====
+// ===== LOAD USERS (FIX QUI) =====
 fetch(API,{
   method:"POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
   body: JSON.stringify({action:"getUsers"})
 })
 .then(r=>r.json())
@@ -122,7 +104,8 @@ fetch(API,{
     o.textContent=u;
     s.appendChild(o);
   });
-});
+})
+.catch(()=>toast("Errore caricamento utenti"));
 
 // ===== LOGIN =====
 function login(){
@@ -141,6 +124,9 @@ function login(){
 
   fetch(API,{
     method:"POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({action:"login",username:u,pin:p})
   })
   .then(r=>r.json())
@@ -187,6 +173,9 @@ function save(){
 
   fetch(API,{
     method:"POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({action:"save",user:currentUser})
   })
   .then(r=>r.json())
