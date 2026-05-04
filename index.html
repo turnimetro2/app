@@ -1,72 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box; /* 🔥 fondamentale */
-    }
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-    body {
-      font-family: Arial;
-      margin: 0;
-      font-size: 16px;
-      overflow-x: hidden; /* 🔥 evita scroll orizzontale */
-    }
+  body {
+    font-family: Arial;
+    margin: 0;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-      margin: auto;
-      padding: 12px;
-    }
+  .container {
+    width: 100%;
+    max-width: 480px;
+    margin: auto;
+    padding: 12px;
+  }
 
-    /* 🔥 FIX INPUT CHE ESCONO */
-    input, select, button {
-      width: 100%;
-      max-width: 100%;
-      margin: 8px 0;
-      padding: 12px;
-      font-size: 16px;
-      display: block;
-    }
+  input, select, button {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    font-size: 16px;
+  }
 
-    button {
-      cursor: pointer;
-    }
+  button {
+    cursor: pointer;
+  }
 
-    .hidden {
-      display: none;
-    }
+  .hidden {
+    display: none;
+  }
 
-    /* 🔥 TOAST MOBILE */
-    #toast {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 10px 12px;
-      font-size: 14px;
-      max-width: 90%;
-      text-align: center;
-      display: none;
-    }
-
-    /* 🔥 piccoli schermi */
-    @media (max-width: 360px) {
-      body {
-        font-size: 15px;
-      }
-
-      input, select, button {
-        padding: 10px;
-        font-size: 15px;
-      }
-    }
-  </style>
+  #toast {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 14px;
+    max-width: 90%;
+    text-align: center;
+    display: none;
+  }
+</style>
 </head>
 
 <body>
@@ -106,14 +90,18 @@ function toast(t){
   setTimeout(()=>el.style.display="none",2000);
 }
 
-// ===== LOAD USERS =====
+// ===== LOAD USERS (LOGICA ORIGINALE RIPRISTINATA) =====
 fetch(API,{
   method:"POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
   body: JSON.stringify({action:"getUsers"})
 })
 .then(r=>r.json())
 .then(users=>{
   let s=document.getElementById("username");
+
   s.innerHTML='<option value="">Seleziona utente</option>';
 
   users.forEach(u=>{
@@ -122,7 +110,8 @@ fetch(API,{
     o.textContent=u;
     s.appendChild(o);
   });
-});
+})
+.catch(()=>toast("Errore caricamento utenti"));
 
 // ===== LOGIN =====
 function login(){
@@ -141,6 +130,9 @@ function login(){
 
   fetch(API,{
     method:"POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({action:"login",username:u,pin:p})
   })
   .then(r=>r.json())
@@ -187,6 +179,9 @@ function save(){
 
   fetch(API,{
     method:"POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({action:"save",user:currentUser})
   })
   .then(r=>r.json())
