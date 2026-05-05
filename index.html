@@ -4,27 +4,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body { font-family: Arial; margin:0; }
-.container { max-width:420px; margin:auto; padding:15px; }
+* { box-sizing: border-box; }
 
-input, select, button {
-  width:100%;
-  margin:8px 0;
-  padding:14px;
-  font-size:16px;
+body {
+  font-family: Arial;
+  margin: 0;
+  font-size: 16px;
+  background: #fff;
 }
 
-.hidden { display:none; }
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 14px;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 14px;
+  font-size: 16px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
 
 #toast {
-  position:fixed;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#333;
-  color:#fff;
-  padding:10px;
-  display:none;
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  font-size: 14px;
+  display: none;
+  max-width: 90%;
+  text-align: center;
 }
 </style>
 </head>
@@ -33,32 +54,33 @@ input, select, button {
 
 <div class="container">
 
-<div id="loginBox">
-  <select id="username">
-    <option>Caricamento utenti...</option>
-  </select>
+  <!-- LOGIN -->
+  <div id="loginBox">
+    <select id="username">
+      <option>Caricamento utenti...</option>
+    </select>
 
-  <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
+    <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
 
-  <button id="btnLogin">Login</button>
-</div>
+    <button id="btnLogin">Login</button>
+  </div>
 
-<div id="completeBox" class="hidden">
-  <input id="email" placeholder="Email">
-  <input id="matricola" placeholder="Matricola 5 cifre">
+  <!-- COMPLETA DATI -->
+  <div id="completeBox" class="hidden">
+    <input id="email" placeholder="Email">
+    <input id="matricola" placeholder="Matricola 5 cifre">
+    <button id="btnComplete">Salva dati</button>
+  </div>
 
-  <button id="btnComplete">Salva</button>
-</div>
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="hidden">
+    <input id="d_user" disabled>
+    <input id="d_pin">
+    <input id="d_email">
+    <input id="d_mat">
 
-<div id="dashboard" class="hidden">
-  <input id="d_user" disabled>
-  <input id="d_pin">
-  <input id="d_email">
-  <input id="d_mat">
-
-  <button id="btnSave">Salva</button>
-  <button id="btnLogout">Logout</button>
-</div>
+    <button id="btnSave">Salva</button>
+  </div>
 
 </div>
 
@@ -66,7 +88,7 @@ input, select, button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbwD1TVR4s-3HmEQD4CNNFU0QMojPxfmrbtYH-cpZDm_Pi8cG_z43i3j_kT-B-F47hlQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbxv3mVz0BPDhOKE7rDK0w-S002WAS-Vu8Qvr5DS6Ez4m9UMi-a91mWJyZfZYLV6P2QQ/exec";
 
 let currentUser = null;
 let busy = false;
@@ -76,41 +98,54 @@ function toast(msg){
   let t = document.getElementById("toast");
   t.innerText = msg;
   t.style.display = "block";
-  setTimeout(()=>t.style.display="none",2000);
+  setTimeout(()=> t.style.display="none", 2200);
 }
 
-// ===== API
-async function callAPI(data){
-  let r = await fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify(data)
-  });
-  return await r.json();
-}
+// ===== LOAD USERS (FIX ROBUSTO)
+function loadUsers(){
 
-// ===== INIT
-window.onload = async function(){
+  fetch(API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({ action: "getUsers" })
+  })
+  .then(r => r.text())
+  .then(text => {
 
-  // utenti
-  try{
-    let users = await callAPI({action:"getUsers"});
+    let users;
+
+    try {
+      users = JSON.parse(text);
+    } catch (e) {
+      console.error("Risposta non valida:", text);
+      toast("Errore caricamento utenti");
+      return;
+    }
 
     let s = document.getElementById("username");
     s.innerHTML = '<option value="">Seleziona utente</option>';
 
-    users.forEach(u=>{
+    users.forEach(u => {
       let o = document.createElement("option");
-      o.value=u;
-      o.textContent=u;
+      o.value = u;
+      o.textContent = u;
       s.appendChild(o);
     });
 
-  }catch(e){
+  })
+  .catch(err => {
+    console.error(err);
     toast("Errore caricamento utenti");
-  }
+  });
+}
 
-  // sessione
+// ===== INIT
+window.onload = function(){
+
+  loadUsers();
+
   let saved = localStorage.getItem("session");
   if(saved){
     currentUser = JSON.parse(saved);
@@ -120,13 +155,12 @@ window.onload = async function(){
   btnLogin.onclick = login;
   btnComplete.onclick = complete;
   btnSave.onclick = save;
-  btnLogout.onclick = logout;
 }
 
 // ===== LOGIN
-async function login(){
+function login(){
   if(busy) return;
-  busy=true;
+  busy = true;
 
   let u = username.value;
   let p = pin.value;
@@ -134,26 +168,36 @@ async function login(){
   if(!u){ toast("Seleziona utente"); busy=false; return; }
   if(!/^\d{6}$/.test(p)){ toast("PIN non valido"); busy=false; return; }
 
-  let res = await callAPI({action:"login",username:u,pin:p});
-  busy=false;
+  fetch(API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({action:"login",username:u,pin:p})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    busy=false;
 
-  if(!res.success){ toast("Errore login"); return; }
+    if(!res.success){
+      toast("Login errato");
+      return;
+    }
 
-  currentUser = res.user;
-  localStorage.setItem("session", JSON.stringify(currentUser));
+    currentUser = res.user;
+    localStorage.setItem("session", JSON.stringify(currentUser));
 
-  if(!currentUser.email || !currentUser.matricola){
-    loginBox.classList.add("hidden");
-    completeBox.classList.remove("hidden");
-  } else {
-    openDashboard();
-  }
+    if(!currentUser.email || !currentUser.matricola){
+      loginBox.classList.add("hidden");
+      completeBox.classList.remove("hidden");
+    } else {
+      openDashboard();
+    }
+  });
 }
 
-// ===== COMPLETA
-async function complete(){
+// ===== COMPLETA DATI
+function complete(){
   if(busy) return;
-  busy=true;
+  busy = true;
 
   let email = document.getElementById("email").value;
   let mat = document.getElementById("matricola").value;
@@ -166,28 +210,28 @@ async function complete(){
     toast("Matricola non valida"); busy=false; return;
   }
 
-  currentUser.email=email;
-  currentUser.matricola=mat;
+  currentUser.email = email;
+  currentUser.matricola = mat;
 
-  await save(true);
+  save(true);
 }
 
-// ===== DASH
+// ===== DASHBOARD
 function openDashboard(){
   loginBox.classList.add("hidden");
   completeBox.classList.add("hidden");
   dashboard.classList.remove("hidden");
 
-  d_user.value=currentUser.username;
-  d_pin.value=currentUser.pin;
-  d_email.value=currentUser.email;
-  d_mat.value=currentUser.matricola;
+  d_user.value = currentUser.username;
+  d_pin.value = currentUser.pin;
+  d_email.value = currentUser.email;
+  d_mat.value = currentUser.matricola;
 }
 
 // ===== SAVE
-async function save(fromComplete=false){
+function save(fromComplete=false){
   if(busy) return;
-  busy=true;
+  busy = true;
 
   let pinVal = d_pin.value;
   let emailVal = d_email.value;
@@ -205,31 +249,27 @@ async function save(fromComplete=false){
     toast("Matricola non valida"); busy=false; return;
   }
 
-  currentUser.pin=pinVal;
-  currentUser.email=emailVal;
-  currentUser.matricola=matVal;
+  currentUser.pin = pinVal;
+  currentUser.email = emailVal;
+  currentUser.matricola = matVal;
 
-  let res = await callAPI({action:"save",user:currentUser});
-  busy=false;
+  fetch(API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({action:"save",user:currentUser})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    busy=false;
 
-  if(!res.success){
-    toast(res.message || "Errore");
-    return;
-  }
+    if(!res.success){
+      toast(res.message || "Errore salvataggio");
+      return;
+    }
 
-  localStorage.setItem("session", JSON.stringify(currentUser));
-
-  if(fromComplete){
-    openDashboard();
-  }
-
-  toast("Salvato");
-}
-
-// ===== LOGOUT
-function logout(){
-  localStorage.removeItem("session");
-  location.reload();
+    localStorage.setItem("session", JSON.stringify(currentUser));
+    toast("Salvato");
+  });
 }
 
 </script>
