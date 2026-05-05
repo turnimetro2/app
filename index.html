@@ -10,7 +10,6 @@ body {
   font-family: Arial;
   margin: 0;
   font-size: 16px;
-  background: #fff;
 }
 
 .container {
@@ -26,13 +25,7 @@ input, select, button {
   font-size: 16px;
 }
 
-button {
-  cursor: pointer;
-}
-
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 #toast {
   position: fixed;
@@ -42,10 +35,7 @@ button {
   background: #333;
   color: #fff;
   padding: 10px;
-  font-size: 14px;
   display: none;
-  max-width: 90%;
-  text-align: center;
 }
 </style>
 </head>
@@ -54,7 +44,6 @@ button {
 
 <div class="container">
 
-  <!-- LOGIN -->
   <div id="loginBox">
     <select id="username">
       <option>Caricamento utenti...</option>
@@ -65,20 +54,17 @@ button {
     <button id="btnLogin">Login</button>
   </div>
 
-  <!-- COMPLETA DATI -->
   <div id="completeBox" class="hidden">
     <input id="email" placeholder="Email">
     <input id="matricola" placeholder="Matricola 5 cifre">
     <button id="btnComplete">Salva dati</button>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="dashboard" class="hidden">
     <input id="d_user" disabled>
     <input id="d_pin">
     <input id="d_email">
     <input id="d_mat">
-
     <button id="btnSave">Salva</button>
   </div>
 
@@ -88,85 +74,76 @@ button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbxv3mVz0BPDhOKE7rDK0w-S002WAS-Vu8Qvr5DS6Ez4m9UMi-a91mWJyZfZYLV6P2QQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbzx1xcvsnT7TcYMA2njvUXGdQJ4dAf5BJA-Svo_MnzYpvnoLu6ZweCJ6CQmtGqVlO5o/exec";
 
 let currentUser = null;
 let busy = false;
 
 // ===== TOAST
 function toast(msg){
-  let t = document.getElementById("toast");
+  const t = document.getElementById("toast");
   t.innerText = msg;
   t.style.display = "block";
-  setTimeout(()=> t.style.display="none", 2200);
+  setTimeout(()=> t.style.display="none", 2000);
 }
 
-// ===== LOAD USERS (FIX ROBUSTO)
+// ===== LOAD USERS
 function loadUsers(){
 
-  fetch(API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({ action: "getUsers" })
+  fetch(API,{
+    method:"POST",
+    headers:{ "Content-Type":"text/plain;charset=utf-8" },
+    body:JSON.stringify({action:"getUsers"})
   })
-  .then(r => r.text())
-  .then(text => {
-
+  .then(r=>r.text())
+  .then(text=>{
     let users;
 
     try {
       users = JSON.parse(text);
-    } catch (e) {
-      console.error("Risposta non valida:", text);
+    } catch(e){
+      console.error(text);
       toast("Errore caricamento utenti");
       return;
     }
 
-    let s = document.getElementById("username");
+    const s = document.getElementById("username");
     s.innerHTML = '<option value="">Seleziona utente</option>';
 
-    users.forEach(u => {
-      let o = document.createElement("option");
+    users.forEach(u=>{
+      const o = document.createElement("option");
       o.value = u;
       o.textContent = u;
       s.appendChild(o);
     });
 
   })
-  .catch(err => {
+  .catch(err=>{
     console.error(err);
     toast("Errore caricamento utenti");
   });
 }
 
-// ===== INIT
-window.onload = function(){
-
-  loadUsers();
-
-  let saved = localStorage.getItem("session");
-  if(saved){
-    currentUser = JSON.parse(saved);
-    openDashboard();
-  }
-
-  btnLogin.onclick = login;
-  btnComplete.onclick = complete;
-  btnSave.onclick = save;
-}
-
 // ===== LOGIN
 function login(){
+
   if(busy) return;
   busy = true;
 
-  let u = username.value;
-  let p = pin.value;
+  const u = document.getElementById("username").value;
+  const p = document.getElementById("pin").value;
 
-  if(!u){ toast("Seleziona utente"); busy=false; return; }
-  if(!/^\d{6}$/.test(p)){ toast("PIN non valido"); busy=false; return; }
+  if(!u){
+    toast("Seleziona utente");
+    busy=false;
+    return;
+  }
+
+  if(!/^\d{6}$/.test(p)){
+    toast("PIN non valido");
+    busy=false;
+    return;
+  }
 
   fetch(API,{
     method:"POST",
@@ -186,56 +163,67 @@ function login(){
     localStorage.setItem("session", JSON.stringify(currentUser));
 
     if(!currentUser.email || !currentUser.matricola){
-      loginBox.classList.add("hidden");
-      completeBox.classList.remove("hidden");
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("completeBox").classList.remove("hidden");
     } else {
       openDashboard();
     }
+  })
+  .catch(err=>{
+    busy=false;
+    console.error(err);
+    toast("Errore rete");
   });
 }
 
-// ===== COMPLETA DATI
+// ===== COMPLETA
 function complete(){
-  if(busy) return;
-  busy = true;
 
-  let email = document.getElementById("email").value;
-  let mat = document.getElementById("matricola").value;
+  if(busy) return;
+  busy=true;
+
+  const email = document.getElementById("email").value;
+  const mat = document.getElementById("matricola").value;
 
   if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
-    toast("Email non valida"); busy=false; return;
+    toast("Email non valida");
+    busy=false;
+    return;
   }
 
   if(!/^\d{5}$/.test(mat)){
-    toast("Matricola non valida"); busy=false; return;
+    toast("Matricola non valida");
+    busy=false;
+    return;
   }
 
-  currentUser.email = email;
-  currentUser.matricola = mat;
+  currentUser.email=email;
+  currentUser.matricola=mat;
 
   save(true);
 }
 
 // ===== DASHBOARD
 function openDashboard(){
-  loginBox.classList.add("hidden");
-  completeBox.classList.add("hidden");
-  dashboard.classList.remove("hidden");
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("completeBox").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
 
-  d_user.value = currentUser.username;
-  d_pin.value = currentUser.pin;
-  d_email.value = currentUser.email;
-  d_mat.value = currentUser.matricola;
+  document.getElementById("d_user").value=currentUser.username;
+  document.getElementById("d_pin").value=currentUser.pin;
+  document.getElementById("d_email").value=currentUser.email;
+  document.getElementById("d_mat").value=currentUser.matricola;
 }
 
 // ===== SAVE
 function save(fromComplete=false){
-  if(busy) return;
-  busy = true;
 
-  let pinVal = d_pin.value;
-  let emailVal = d_email.value;
-  let matVal = d_mat.value;
+  if(busy) return;
+  busy=true;
+
+  const pinVal = document.getElementById("d_pin").value;
+  const emailVal = document.getElementById("d_email").value;
+  const matVal = document.getElementById("d_mat").value;
 
   if(!/^\d{6}$/.test(pinVal)){
     toast("PIN non valido"); busy=false; return;
@@ -249,9 +237,9 @@ function save(fromComplete=false){
     toast("Matricola non valida"); busy=false; return;
   }
 
-  currentUser.pin = pinVal;
-  currentUser.email = emailVal;
-  currentUser.matricola = matVal;
+  currentUser.pin=pinVal;
+  currentUser.email=emailVal;
+  currentUser.matricola=matVal;
 
   fetch(API,{
     method:"POST",
@@ -263,14 +251,40 @@ function save(fromComplete=false){
     busy=false;
 
     if(!res.success){
-      toast(res.message || "Errore salvataggio");
+      toast(res.message || "Errore");
       return;
     }
 
     localStorage.setItem("session", JSON.stringify(currentUser));
+
+    if(fromComplete){
+      openDashboard();
+    }
+
     toast("Salvato");
+  })
+  .catch(err=>{
+    busy=false;
+    console.error(err);
+    toast("Errore rete");
   });
 }
+
+// ===== INIT SICURO
+document.addEventListener("DOMContentLoaded", function(){
+
+  loadUsers();
+
+  document.getElementById("btnLogin").addEventListener("click", login);
+  document.getElementById("btnComplete").addEventListener("click", complete);
+  document.getElementById("btnSave").addEventListener("click", save);
+
+  let saved = localStorage.getItem("session");
+  if(saved){
+    currentUser = JSON.parse(saved);
+    openDashboard();
+  }
+});
 
 </script>
 
