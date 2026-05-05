@@ -4,38 +4,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  font-family: Arial;
-  margin: 0;
-  font-size: 16px;
-}
-
-.container {
-  max-width: 480px;
-  margin: auto;
-  padding: 12px;
-}
+body { font-family: Arial; margin:0; }
+.container { max-width:400px; margin:auto; padding:15px; }
 
 input, select, button {
-  width: 100%;
-  margin: 8px 0;
-  padding: 12px;
-  font-size: 16px;
+  width:100%;
+  margin:8px 0;
+  padding:12px;
+  font-size:16px;
 }
 
-.hidden { display: none; }
+.hidden { display:none; }
 
 #toast {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 10px;
-  display: none;
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#333;
+  color:#fff;
+  padding:10px;
+  display:none;
 }
 </style>
 </head>
@@ -44,36 +33,24 @@ input, select, button {
 
 <div class="container">
 
-<!-- LOGIN / REGISTER -->
-<div id="authBox">
-
-  <select id="username">
-    <option>Caricamento utenti...</option>
-  </select>
-
-  <!-- LOGIN PIN -->
-  <div id="loginFields">
-    <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
-  </div>
-
-  <!-- REGISTER FIELDS (DINAMICI) -->
-  <div id="registerFields" class="hidden">
-    <input id="email" placeholder="Email">
-    <input id="mat" placeholder="Matricola 5 cifre">
-  </div>
-
-  <button onclick="login()">Login</button>
-  <button onclick="register()">Registrati</button>
-
+<div id="loginBox">
+  <select id="username"></select>
+  <input id="pin" placeholder="PIN 6 cifre">
+  <button onclick="login()" id="btnLogin">Login</button>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dash" class="hidden">
+<div id="completeBox" class="hidden">
+  <input id="email" placeholder="Email">
+  <input id="matricola" placeholder="Matricola 5 cifre">
+  <button onclick="complete()" id="btnComplete">Salva</button>
+</div>
+
+<div id="dashboard" class="hidden">
   <input id="d_user" disabled>
   <input id="d_pin">
   <input id="d_email">
   <input id="d_mat">
-  <button onclick="save()">Salva</button>
+  <button onclick="save()" id="btnSave">Salva</button>
 </div>
 
 </div>
@@ -82,29 +59,28 @@ input, select, button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbz4ne6irMSKQUwP3QxzPmOtXzHcbWeub3Ak3mH3xQz0a8zI2Z8KGZa2dJq-YCXvSzRt/exec";
-
+const API = "https://script.google.com/macros/s/AKfycbxBLjgFsVw9MGXCVuwc-b-kuNo8_e8X7CBu45odxa45j8LgfFNTC-ICsYKzGTn6cYgz/exec";
 let currentUser = null;
-let mode = "login";
+let busy = false;
 
-// ===== TOAST =====
+// ===== TOAST
 function toast(t){
-  let el=document.getElementById("toast");
+  let el = document.getElementById("toast");
   el.innerText=t;
   el.style.display="block";
   setTimeout(()=>el.style.display="none",2000);
 }
 
-// ===== LOAD USERS =====
+// ===== LOAD USERS
 fetch(API,{
   method:"POST",
-  body: JSON.stringify({action:"getUsers"})
+  headers:{ "Content-Type":"application/json" },
+  body:JSON.stringify({action:"getUsers"})
 })
 .then(r=>r.json())
 .then(users=>{
-  let s=document.getElementById("username");
+  let s=username;
   s.innerHTML='<option value="">Seleziona utente</option>';
-
   users.forEach(u=>{
     let o=document.createElement("option");
     o.value=u;
@@ -113,90 +89,67 @@ fetch(API,{
   });
 });
 
-// ===== SWITCH MODE =====
-function register(){
-  mode = "register";
-
-  document.getElementById("loginFields").classList.add("hidden");
-  document.getElementById("registerFields").classList.remove("hidden");
-
-  toast("Modalità registrazione");
-}
-
-// ===== LOGIN =====
+// ===== LOGIN
 function login(){
+  if(busy) return;
+  busy=true;
 
   let u=username.value;
+  let p=pin.value;
 
-  if(mode === "login"){
-    let p=pin.value;
+  if(!u){ toast("Seleziona utente"); busy=false; return; }
+  if(!/^[0-9]{6}$/.test(p)){ toast("PIN non valido"); busy=false; return; }
 
-    if(!u){ toast("Seleziona utente"); return; }
+  fetch(API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({action:"login",username:u,pin:p})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    busy=false;
 
-    if(!/^[0-9]{6}$/.test(p)){
-      toast("PIN non valido");
-      return;
+    if(!res.success){ toast("Errore login"); return; }
+
+    currentUser=res.user;
+    localStorage.setItem("session", JSON.stringify(currentUser));
+
+    if(!currentUser.email || !currentUser.matricola){
+      loginBox.classList.add("hidden");
+      completeBox.classList.remove("hidden");
+    } else {
+      openDashboard();
     }
-
-    fetch(API,{
-      method:"POST",
-      body: JSON.stringify({action:"login",username:u,pin:p})
-    })
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.success){ toast("Errore login"); return; }
-
-      currentUser=res.user;
-      openDash();
-    });
-
-  } else {
-
-    // REGISTER FLOW
-    let email=document.getElementById("email").value;
-    let mat=document.getElementById("mat").value;
-
-    if(!u){ toast("Seleziona utente"); return; }
-
-    if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
-      toast("Email non valida");
-      return;
-    }
-
-    if(!/^[1-9][0-9]{4}$/.test(mat)){
-      toast("Matricola non valida");
-      return;
-    }
-
-    fetch(API,{
-      method:"POST",
-      body: JSON.stringify({
-        action:"register",
-        username:u,
-        email:email,
-        matricola:mat
-      })
-    })
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.success){
-        toast(res.message || "Utente già registrato");
-        return;
-      }
-
-      toast("Registrazione completata. Email inviata.");
-      mode="login";
-
-      document.getElementById("loginFields").classList.remove("hidden");
-      document.getElementById("registerFields").classList.add("hidden");
-    });
-  }
+  });
 }
 
-// ===== DASH =====
-function openDash(){
-  authBox.classList.add("hidden");
-  dash.classList.remove("hidden");
+// ===== COMPLETAMENTO DATI
+function complete(){
+  if(busy) return;
+  busy=true;
+
+  let email=document.getElementById("email").value;
+  let mat=document.getElementById("matricola").value;
+
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+    toast("Email non valida"); busy=false; return;
+  }
+
+  if(!/^[0-9]{5}$/.test(mat)){
+    toast("Matricola deve avere 5 cifre"); busy=false; return;
+  }
+
+  currentUser.email=email;
+  currentUser.matricola=mat;
+
+  save(true);
+}
+
+// ===== DASHBOARD
+function openDashboard(){
+  loginBox.classList.add("hidden");
+  completeBox.classList.add("hidden");
+  dashboard.classList.remove("hidden");
 
   d_user.value=currentUser.username;
   d_pin.value=currentUser.pin;
@@ -204,16 +157,62 @@ function openDash(){
   d_mat.value=currentUser.matricola;
 }
 
-// ===== SAVE =====
-function save(){
+// ===== SAVE
+function save(fromComplete=false){
+  if(busy) return;
+  busy=true;
+
+  let pinVal=d_pin.value || currentUser.pin;
+  let emailVal=d_email.value || currentUser.email;
+  let matVal=d_mat.value || currentUser.matricola;
+
+  if(!/^[0-9]{6}$/.test(pinVal)){
+    toast("PIN non valido"); busy=false; return;
+  }
+
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(emailVal)){
+    toast("Email non valida"); busy=false; return;
+  }
+
+  if(!/^[0-9]{5}$/.test(matVal)){
+    toast("Matricola non valida"); busy=false; return;
+  }
+
+  currentUser.pin=pinVal;
+  currentUser.email=emailVal;
+  currentUser.matricola=matVal;
+
   fetch(API,{
     method:"POST",
-    body: JSON.stringify({action:"save",user:currentUser})
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({action:"save",user:currentUser})
   })
   .then(r=>r.json())
   .then(res=>{
-    toast(res.success?"Salvato":"Errore");
+    busy=false;
+
+    if(!res.success){
+      toast(res.message || "Errore");
+      return;
+    }
+
+    localStorage.setItem("session", JSON.stringify(currentUser));
+
+    if(fromComplete){
+      openDashboard();
+    }
+
+    toast("Salvato");
   });
+}
+
+// ===== SESSIONE AUTOMATICA
+window.onload = function(){
+  let s = localStorage.getItem("session");
+  if(s){
+    currentUser = JSON.parse(s);
+    openDashboard();
+  }
 }
 
 </script>
