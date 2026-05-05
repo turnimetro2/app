@@ -34,7 +34,9 @@ input, select, button {
 <div class="container">
 
 <div id="loginBox">
-  <select id="username"></select>
+  <select id="username">
+    <option>Caricamento utenti...</option>
+  </select>
   <input id="pin" placeholder="PIN 6 cifre">
   <button onclick="login()" id="btnLogin">Login</button>
 </div>
@@ -60,6 +62,7 @@ input, select, button {
 <script>
 
 const API = "https://script.google.com/macros/s/AKfycbxX3bLyBYfxlV0OhYtAx5sNj1za7LS6JpuCrpXJ6remwWDKF7RXLK0OuBQTUAT3y7Qj/exec";
+
 let currentUser = null;
 let busy = false;
 
@@ -71,31 +74,50 @@ function toast(t){
   setTimeout(()=>el.style.display="none",2000);
 }
 
-// ===== LOAD USERS
-fetch(API,{
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body:JSON.stringify({action:"getUsers"})
-})
-.then(r=>r.json())
-.then(users=>{
-  let s=username;
-  s.innerHTML='<option value="">Seleziona utente</option>';
-  users.forEach(u=>{
-    let o=document.createElement("option");
-    o.value=u;
-    o.textContent=u;
-    s.appendChild(o);
+// ===== INIT
+window.onload = function(){
+
+  // carica utenti
+  fetch(API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({action:"getUsers"})
+  })
+  .then(r=>r.json())
+  .then(users=>{
+
+    let s = document.getElementById("username");
+
+    s.innerHTML='<option value="">Seleziona utente</option>';
+
+    users.forEach(u=>{
+      let o=document.createElement("option");
+      o.value=u;
+      o.textContent=u;
+      s.appendChild(o);
+    });
+
+  })
+  .catch(err=>{
+    toast("Errore caricamento utenti");
+    console.error(err);
   });
-});
+
+  // sessione
+  let saved = localStorage.getItem("session");
+  if(saved){
+    currentUser = JSON.parse(saved);
+    openDashboard();
+  }
+}
 
 // ===== LOGIN
 function login(){
   if(busy) return;
   busy=true;
 
-  let u=username.value;
-  let p=pin.value;
+  let u=document.getElementById("username").value;
+  let p=document.getElementById("pin").value;
 
   if(!u){ toast("Seleziona utente"); busy=false; return; }
   if(!/^[0-9]{6}$/.test(p)){ toast("PIN non valido"); busy=false; return; }
@@ -115,15 +137,15 @@ function login(){
     localStorage.setItem("session", JSON.stringify(currentUser));
 
     if(!currentUser.email || !currentUser.matricola){
-      loginBox.classList.add("hidden");
-      completeBox.classList.remove("hidden");
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("completeBox").classList.remove("hidden");
     } else {
       openDashboard();
     }
   });
 }
 
-// ===== COMPLETAMENTO DATI
+// ===== COMPLETA DATI
 function complete(){
   if(busy) return;
   busy=true;
@@ -147,14 +169,14 @@ function complete(){
 
 // ===== DASHBOARD
 function openDashboard(){
-  loginBox.classList.add("hidden");
-  completeBox.classList.add("hidden");
-  dashboard.classList.remove("hidden");
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("completeBox").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
 
-  d_user.value=currentUser.username;
-  d_pin.value=currentUser.pin;
-  d_email.value=currentUser.email;
-  d_mat.value=currentUser.matricola;
+  document.getElementById("d_user").value=currentUser.username;
+  document.getElementById("d_pin").value=currentUser.pin;
+  document.getElementById("d_email").value=currentUser.email;
+  document.getElementById("d_mat").value=currentUser.matricola;
 }
 
 // ===== SAVE
@@ -162,9 +184,9 @@ function save(fromComplete=false){
   if(busy) return;
   busy=true;
 
-  let pinVal=d_pin.value || currentUser.pin;
-  let emailVal=d_email.value || currentUser.email;
-  let matVal=d_mat.value || currentUser.matricola;
+  let pinVal=document.getElementById("d_pin").value;
+  let emailVal=document.getElementById("d_email").value;
+  let matVal=document.getElementById("d_mat").value;
 
   if(!/^[0-9]{6}$/.test(pinVal)){
     toast("PIN non valido"); busy=false; return;
@@ -204,15 +226,6 @@ function save(fromComplete=false){
 
     toast("Salvato");
   });
-}
-
-// ===== SESSIONE AUTOMATICA
-window.onload = function(){
-  let s = localStorage.getItem("session");
-  if(s){
-    currentUser = JSON.parse(s);
-    openDashboard();
-  }
 }
 
 </script>
