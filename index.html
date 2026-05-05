@@ -1,365 +1,237 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family:Arial;
-  margin:0;
-  background:#fff;
-}
+body { font-family: Arial; margin:0; }
+.container { max-width:420px; margin:auto; padding:15px; }
 
-.wrap{
-  max-width:420px;
-  margin:auto;
-  padding:15px;
-}
-
-input,select,button{
+input, select, button {
   width:100%;
-  padding:14px;
   margin:8px 0;
+  padding:14px;
   font-size:16px;
-  box-sizing:border-box;
 }
 
-button{
-  cursor:pointer;
-}
+.hidden { display:none; }
 
-.hidden{
-  display:none;
-}
-
-#toast{
+#toast {
   position:fixed;
   bottom:15px;
   left:50%;
   transform:translateX(-50%);
   background:#333;
   color:#fff;
-  padding:12px;
+  padding:10px;
   display:none;
-  max-width:90%;
-  text-align:center;
 }
 </style>
 </head>
+
 <body>
 
-<div class="wrap">
+<div class="container">
 
-  <!-- LOGIN -->
-  <div id="loginBox">
-    <select id="username">
-      <option>Caricamento utenti...</option>
-    </select>
+<div id="loginBox">
+  <select id="username">
+    <option>Caricamento utenti...</option>
+  </select>
 
-    <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
+  <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
 
-    <button id="loginBtn">Login</button>
-  </div>
+  <button id="btnLogin">Login</button>
+</div>
 
-  <!-- COMPLETAMENTO DATI -->
-  <div id="completeBox" class="hidden">
-    <input id="email" placeholder="Email">
-    <input id="matricola" placeholder="Matricola 5 cifre">
+<div id="completeBox" class="hidden">
+  <input id="email" placeholder="Email">
+  <input id="matricola" placeholder="Matricola 5 cifre">
 
-    <button id="completeBtn">Salva</button>
-  </div>
+  <button id="btnComplete">Salva</button>
+</div>
 
-  <!-- DASHBOARD -->
-  <div id="dash" class="hidden">
-    <input id="d_username" disabled>
-    <input id="d_pin" inputmode="numeric">
-    <input id="d_email">
-    <input id="d_matricola" inputmode="numeric">
+<div id="dashboard" class="hidden">
+  <input id="d_user" disabled>
+  <input id="d_pin">
+  <input id="d_email">
+  <input id="d_mat">
 
-    <button id="saveBtn">Salva</button>
-    <button id="logoutBtn">Logout</button>
-  </div>
+  <button id="btnSave">Salva</button>
+  <button id="btnLogout">Logout</button>
+</div>
 
 </div>
 
 <div id="toast"></div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbyQWxeWSDWc1EJa9bAoCYuXOwtbWKZpzvhndnmOBBW869RcadmUVeXpJT5Bb8KLYJlY/exec";
+
+const API = "https://script.google.com/macros/s/AKfycbx9xVdEVmUebcnATK4zE7Y8K6T6lluYgPh_6JBCsweP5G8ZzXKweWk49wJdLGNvy1Yt/exec";
 
 let currentUser = null;
 let busy = false;
 
-/* ======================
-   TOAST
-====================== */
+// ===== TOAST
 function toast(msg){
-  const t = document.getElementById("toast");
+  let t = document.getElementById("toast");
   t.innerText = msg;
   t.style.display = "block";
-
-  setTimeout(()=>{
-    t.style.display="none";
-  },2000);
+  setTimeout(()=>t.style.display="none",2000);
 }
 
-/* ======================
-   REQUEST
-====================== */
-async function api(payload){
-  const res = await fetch(API,{
+// ===== API
+async function callAPI(data){
+  let r = await fetch(API,{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify(payload)
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(data)
   });
-
-  return await res.json();
+  return await r.json();
 }
 
-/* ======================
-   LOCK CLICK
-====================== */
-function lock(){
-  if(busy) return false;
-  busy=true;
-  return true;
-}
+// ===== INIT
+window.onload = async function(){
 
-function unlock(){
-  busy=false;
-}
-
-/* ======================
-   VALIDAZIONI
-====================== */
-function validEmail(v){
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-}
-
-function validPin(v){
-  return /^\d{6}$/.test(v);
-}
-
-function validMat(v){
-  return /^\d{5}$/.test(v);
-}
-
-/* ======================
-   LOAD USERS
-====================== */
-async function loadUsers(){
+  // utenti
   try{
-    const users = await api({action:"getUsers"});
+    let users = await callAPI({action:"getUsers"});
 
-    const sel = document.getElementById("username");
-    sel.innerHTML = '<option value="">Seleziona utente</option>';
+    let s = document.getElementById("username");
+    s.innerHTML = '<option value="">Seleziona utente</option>';
 
     users.forEach(u=>{
-      const o = document.createElement("option");
+      let o = document.createElement("option");
       o.value=u;
       o.textContent=u;
-      sel.appendChild(o);
+      s.appendChild(o);
     });
 
   }catch(e){
     toast("Errore caricamento utenti");
   }
+
+  // sessione
+  let saved = localStorage.getItem("session");
+  if(saved){
+    currentUser = JSON.parse(saved);
+    openDashboard();
+  }
+
+  btnLogin.onclick = login;
+  btnComplete.onclick = complete;
+  btnSave.onclick = save;
+  btnLogout.onclick = logout;
 }
 
-/* ======================
-   LOGIN
-====================== */
+// ===== LOGIN
 async function login(){
-  if(!lock()) return;
+  if(busy) return;
+  busy=true;
 
-  const username = document.getElementById("username").value;
-  const pin = document.getElementById("pin").value;
+  let u = username.value;
+  let p = pin.value;
 
-  if(!username){
-    toast("Seleziona utente");
-    unlock();
-    return;
-  }
+  if(!u){ toast("Seleziona utente"); busy=false; return; }
+  if(!/^\d{6}$/.test(p)){ toast("PIN non valido"); busy=false; return; }
 
-  if(!validPin(pin)){
-    toast("PIN non valido");
-    unlock();
-    return;
-  }
+  let res = await callAPI({action:"login",username:u,pin:p});
+  busy=false;
 
-  const res = await api({
-    action:"login",
-    username,
-    pin
-  });
-
-  unlock();
-
-  if(!res.success){
-    toast("Credenziali errate");
-    return;
-  }
+  if(!res.success){ toast("Errore login"); return; }
 
   currentUser = res.user;
-  saveSession();
+  localStorage.setItem("session", JSON.stringify(currentUser));
 
   if(!currentUser.email || !currentUser.matricola){
-    showComplete();
-  }else{
-    showDash();
+    loginBox.classList.add("hidden");
+    completeBox.classList.remove("hidden");
+  } else {
+    openDashboard();
   }
 }
 
-/* ======================
-   COMPLETE
-====================== */
+// ===== COMPLETA
 async function complete(){
-  if(!lock()) return;
+  if(busy) return;
+  busy=true;
 
-  const email = document.getElementById("email").value.trim();
-  const matricola = document.getElementById("matricola").value.trim();
+  let email = document.getElementById("email").value;
+  let mat = document.getElementById("matricola").value;
 
-  if(!validEmail(email)){
-    toast("Email non valida");
-    unlock();
-    return;
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+    toast("Email non valida"); busy=false; return;
   }
 
-  if(!validMat(matricola)){
-    toast("Matricola non valida");
-    unlock();
-    return;
+  if(!/^\d{5}$/.test(mat)){
+    toast("Matricola non valida"); busy=false; return;
   }
 
-  currentUser.email = email;
-  currentUser.matricola = matricola;
+  currentUser.email=email;
+  currentUser.matricola=mat;
 
   await save(true);
 }
 
-/* ======================
-   SAVE
-====================== */
+// ===== DASH
+function openDashboard(){
+  loginBox.classList.add("hidden");
+  completeBox.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+
+  d_user.value=currentUser.username;
+  d_pin.value=currentUser.pin;
+  d_email.value=currentUser.email;
+  d_mat.value=currentUser.matricola;
+}
+
+// ===== SAVE
 async function save(fromComplete=false){
+  if(busy) return;
+  busy=true;
 
-  const pin = fromComplete
-    ? currentUser.pin
-    : document.getElementById("d_pin").value.trim();
+  let pinVal = d_pin.value;
+  let emailVal = d_email.value;
+  let matVal = d_mat.value;
 
-  const email = fromComplete
-    ? currentUser.email
-    : document.getElementById("d_email").value.trim();
-
-  const matricola = fromComplete
-    ? currentUser.matricola
-    : document.getElementById("d_matricola").value.trim();
-
-  if(!validPin(pin)){
-    toast("PIN non valido");
-    unlock();
-    return;
+  if(!/^\d{6}$/.test(pinVal)){
+    toast("PIN non valido"); busy=false; return;
   }
 
-  if(!validEmail(email)){
-    toast("Email non valida");
-    unlock();
-    return;
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(emailVal)){
+    toast("Email non valida"); busy=false; return;
   }
 
-  if(!validMat(matricola)){
-    toast("Matricola non valida");
-    unlock();
-    return;
+  if(!/^\d{5}$/.test(matVal)){
+    toast("Matricola non valida"); busy=false; return;
   }
 
-  currentUser.pin = pin;
-  currentUser.email = email;
-  currentUser.matricola = matricola;
+  currentUser.pin=pinVal;
+  currentUser.email=emailVal;
+  currentUser.matricola=matVal;
 
-  const res = await api({
-    action:"save",
-    user:currentUser
-  });
-
-  unlock();
+  let res = await callAPI({action:"save",user:currentUser});
+  busy=false;
 
   if(!res.success){
     toast(res.message || "Errore");
     return;
   }
 
-  saveSession();
+  localStorage.setItem("session", JSON.stringify(currentUser));
 
   if(fromComplete){
-    showDash();
+    openDashboard();
   }
 
   toast("Salvato");
 }
 
-/* ======================
-   SESSIONE
-====================== */
-function saveSession(){
-  localStorage.setItem(
-    "session",
-    JSON.stringify(currentUser)
-  );
-}
-
-function loadSession(){
-  const s = localStorage.getItem("session");
-
-  if(!s) return false;
-
-  currentUser = JSON.parse(s);
-  showDash();
-  return true;
-}
-
+// ===== LOGOUT
 function logout(){
   localStorage.removeItem("session");
   location.reload();
 }
 
-/* ======================
-   UI
-====================== */
-function showComplete(){
-  loginBox.classList.add("hidden");
-  completeBox.classList.remove("hidden");
-}
-
-function showDash(){
-  loginBox.classList.add("hidden");
-  completeBox.classList.add("hidden");
-  dash.classList.remove("hidden");
-
-  d_username.value = currentUser.username;
-  d_pin.value = currentUser.pin;
-  d_email.value = currentUser.email;
-  d_matricola.value = currentUser.matricola;
-}
-
-/* ======================
-   INIT
-====================== */
-window.onload = ()=>{
-  loadUsers();
-
-  if(!loadSession()){
-    document.getElementById("loginBtn").onclick=login;
-    document.getElementById("completeBtn").onclick=complete;
-    document.getElementById("saveBtn").onclick=()=>save(false);
-    document.getElementById("logoutBtn").onclick=logout;
-  }else{
-    document.getElementById("saveBtn").onclick=()=>save(false);
-    document.getElementById("logoutBtn").onclick=logout;
-  }
-};
 </script>
 
 </body>
