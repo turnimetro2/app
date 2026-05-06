@@ -44,6 +44,7 @@ input, select, button {
 
 <div class="container">
 
+  <!-- LOGIN -->
   <div id="loginBox">
     <select id="username">
       <option>Caricamento utenti...</option>
@@ -54,12 +55,14 @@ input, select, button {
     <button id="btnLogin">Login</button>
   </div>
 
+  <!-- COMPLETAMENTO -->
   <div id="completeBox" class="hidden">
     <input id="email" placeholder="Email">
     <input id="matricola" placeholder="Matricola 5 cifre">
     <button id="btnComplete">Salva dati</button>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="dashboard" class="hidden">
     <input id="d_user" disabled>
     <input id="d_pin">
@@ -74,7 +77,7 @@ input, select, button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbzx1xcvsnT7TcYMA2njvUXGdQJ4dAf5BJA-Svo_MnzYpvnoLu6ZweCJ6CQmtGqVlO5o/exec";
+const API = "https://script.google.com/macros/s/AKfycbxNAnwspYBz0oE_aWRxSsE_PdvNlvvjFEQmfcGkU0rmDmx-YjRJUiqcOnk8bgqMu2xj/exec"; // <-- IMPORTANTE
 
 let currentUser = null;
 let busy = false;
@@ -90,22 +93,9 @@ function toast(msg){
 // ===== LOAD USERS
 function loadUsers(){
 
-  fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"text/plain;charset=utf-8" },
-    body:JSON.stringify({action:"getUsers"})
-  })
-  .then(r=>r.text())
-  .then(text=>{
-    let users;
-
-    try {
-      users = JSON.parse(text);
-    } catch(e){
-      console.error(text);
-      toast("Errore caricamento utenti");
-      return;
-    }
+  fetch(API + "?action=getUsers")
+  .then(r=>r.json())
+  .then(users=>{
 
     const s = document.getElementById("username");
     s.innerHTML = '<option value="">Seleziona utente</option>';
@@ -145,11 +135,7 @@ function login(){
     return;
   }
 
-  fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({action:"login",username:u,pin:p})
-  })
+  fetch(API + `?action=login&username=${encodeURIComponent(u)}&pin=${p}`)
   .then(r=>r.json())
   .then(res=>{
     busy=false;
@@ -197,22 +183,23 @@ function complete(){
     return;
   }
 
-  currentUser.email=email;
-  currentUser.matricola=mat;
+  currentUser.email = email;
+  currentUser.matricola = mat;
 
   save(true);
 }
 
 // ===== DASHBOARD
 function openDashboard(){
+
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("completeBox").classList.add("hidden");
   document.getElementById("dashboard").classList.remove("hidden");
 
-  document.getElementById("d_user").value=currentUser.username;
-  document.getElementById("d_pin").value=currentUser.pin;
-  document.getElementById("d_email").value=currentUser.email;
-  document.getElementById("d_mat").value=currentUser.matricola;
+  document.getElementById("d_user").value = currentUser.username;
+  document.getElementById("d_pin").value = currentUser.pin;
+  document.getElementById("d_email").value = currentUser.email;
+  document.getElementById("d_mat").value = currentUser.matricola;
 }
 
 // ===== SAVE
@@ -221,9 +208,17 @@ function save(fromComplete=false){
   if(busy) return;
   busy=true;
 
-  const pinVal = document.getElementById("d_pin").value;
-  const emailVal = document.getElementById("d_email").value;
-  const matVal = document.getElementById("d_mat").value;
+  let pinVal, emailVal, matVal;
+
+  if(fromComplete){
+    pinVal = currentUser.pin;
+    emailVal = currentUser.email;
+    matVal = currentUser.matricola;
+  } else {
+    pinVal = document.getElementById("d_pin").value;
+    emailVal = document.getElementById("d_email").value;
+    matVal = document.getElementById("d_mat").value;
+  }
 
   if(!/^\d{6}$/.test(pinVal)){
     toast("PIN non valido"); busy=false; return;
@@ -237,15 +232,11 @@ function save(fromComplete=false){
     toast("Matricola non valida"); busy=false; return;
   }
 
-  currentUser.pin=pinVal;
-  currentUser.email=emailVal;
-  currentUser.matricola=matVal;
+  currentUser.pin = pinVal;
+  currentUser.email = emailVal;
+  currentUser.matricola = matVal;
 
-  fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({action:"save",user:currentUser})
-  })
+  fetch(API + `?action=save&username=${encodeURIComponent(currentUser.username)}&pin=${pinVal}&email=${encodeURIComponent(emailVal)}&matricola=${matVal}`)
   .then(r=>r.json())
   .then(res=>{
     busy=false;
@@ -270,7 +261,7 @@ function save(fromComplete=false){
   });
 }
 
-// ===== INIT SICURO
+// ===== INIT
 document.addEventListener("DOMContentLoaded", function(){
 
   loadUsers();
@@ -279,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnComplete").addEventListener("click", complete);
   document.getElementById("btnSave").addEventListener("click", save);
 
-  let saved = localStorage.getItem("session");
+  const saved = localStorage.getItem("session");
   if(saved){
     currentUser = JSON.parse(saved);
     openDashboard();
