@@ -50,7 +50,7 @@ input, select, button {
       <option>Caricamento utenti...</option>
     </select>
 
-    <input id="pin" placeholder="PIN 6 cifre" inputmode="numeric">
+    <input id="pin" placeholder="PIN (6 cifre)" inputmode="numeric">
 
     <button id="btnLogin">Login</button>
   </div>
@@ -58,16 +58,16 @@ input, select, button {
   <!-- COMPLETAMENTO -->
   <div id="completeBox" class="hidden">
     <input id="email" placeholder="Email">
-    <input id="matricola" placeholder="Matricola 5 cifre">
+    <input id="matricola" placeholder="Matricola (5 cifre)">
     <button id="btnComplete">Salva dati</button>
   </div>
 
   <!-- DASHBOARD -->
   <div id="dashboard" class="hidden">
-    <input id="d_user" disabled>
-    <input id="d_pin">
-    <input id="d_email">
-    <input id="d_mat">
+    <input id="d_user" disabled placeholder="Username">
+    <input id="d_pin" placeholder="PIN (6 cifre)">
+    <input id="d_email" placeholder="Email">
+    <input id="d_mat" placeholder="Matricola (5 cifre)">
     <button id="btnSave">Salva</button>
   </div>
 
@@ -77,12 +77,11 @@ input, select, button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbxNAnwspYBz0oE_aWRxSsE_PdvNlvvjFEQmfcGkU0rmDmx-YjRJUiqcOnk8bgqMu2xj/exec"; // <-- IMPORTANTE
+const API = "https://script.google.com/macros/s/AKfycbxdbSBf9ucDjG0w4qJbHxJaR-ZCaSZKwDF58cEWTrSrhMFVACobCFuA8SprZuVIpWpC/exec";
 
 let currentUser = null;
-let busy = false;
 
-// ===== TOAST
+// ===== TOAST =====
 function toast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
@@ -90,58 +89,66 @@ function toast(msg){
   setTimeout(()=> t.style.display="none", 2000);
 }
 
-// ===== LOAD USERS
-function loadUsers(){
+// ===== DISABILITA / ABILITA PULSANTI =====
+function lock(btn){
+  btn.disabled = true;
+}
+function unlock(btn){
+  btn.disabled = false;
+}
 
+// ===== LOAD USERS =====
+function loadUsers(){
   fetch(API + "?action=getUsers")
   .then(r=>r.json())
-  .then(users=>{
+  .then(res=>{
+    if(!res.success){
+      toast("Errore caricamento utenti");
+      return;
+    }
 
     const s = document.getElementById("username");
     s.innerHTML = '<option value="">Seleziona utente</option>';
 
-    users.forEach(u=>{
+    res.users.forEach(u=>{
       const o = document.createElement("option");
       o.value = u;
       o.textContent = u;
       s.appendChild(o);
     });
-
   })
-  .catch(err=>{
-    console.error(err);
-    toast("Errore caricamento utenti");
+  .catch(()=>{
+    toast("Errore rete");
   });
 }
 
-// ===== LOGIN
+// ===== LOGIN =====
 function login(){
-
-  if(busy) return;
-  busy = true;
+  const btn = document.getElementById("btnLogin");
+  lock(btn);
 
   const u = document.getElementById("username").value;
   const p = document.getElementById("pin").value;
 
   if(!u){
     toast("Seleziona utente");
-    busy=false;
+    unlock(btn);
     return;
   }
 
   if(!/^\d{6}$/.test(p)){
     toast("PIN non valido");
-    busy=false;
+    unlock(btn);
     return;
   }
 
   fetch(API + `?action=login&username=${encodeURIComponent(u)}&pin=${p}`)
   .then(r=>r.json())
   .then(res=>{
-    busy=false;
+    unlock(btn);
 
     if(!res.success){
-      toast("Login errato");
+      toast(res.message || "Login errato");
       return;
     }
 
@@ -155,45 +162,40 @@ function login(){
       openDashboard();
     }
   })
-  .catch(err=>{
-    busy=false;
-    console.error(err);
+  .catch(()=>{
+    unlock(btn);
     toast("Errore rete");
   });
 }
 
-// ===== COMPLETA
+// ===== COMPLETA DATI =====
 function complete(){
-
-  if(busy) return;
-  busy=true;
+  const btn = document.getElementById("btnComplete");
+  lock(btn);
 
   const email = document.getElementById("email").value;
   const mat = document.getElementById("matricola").value;
 
   if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
     toast("Email non valida");
-    busy=false;
+    unlock(btn);
     return;
   }
 
   if(!/^\d{5}$/.test(mat)){
     toast("Matricola non valida");
-    busy=false;
+    unlock(btn);
     return;
   }
 
-currentUser.email = email;
-currentUser.matricola = mat;
+  currentUser.email = email;
+  currentUser.matricola = mat;
 
-busy = false;   // <-- FIX SEMPLICE E RISOLUTIVO
-save(true);
-
+  save(true, btn);
 }
 
-// ===== DASHBOARD
+// ===== DASHBOARD =====
 function openDashboard(){
-
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("completeBox").classList.add("hidden");
   document.getElementById("dashboard").classList.remove("hidden");
@@ -204,11 +206,10 @@ function openDashboard(){
   document.getElementById("d_mat").value = currentUser.matricola;
 }
 
-// ===== SAVE
-function save(fromComplete=false){
-
-  if(busy) return;
-  busy=true;
+// ===== SAVE =====
+function save(fromComplete=false, btnOverride=null){
+  const btn = btnOverride || document.getElementById("btnSave");
+  lock(btn);
 
   let pinVal, emailVal, matVal;
 
@@ -223,15 +224,21 @@ function save(fromComplete=false){
   }
 
   if(!/^\d{6}$/.test(pinVal)){
-    toast("PIN non valido"); busy=false; return;
+    toast("PIN non valido");
+    unlock(btn);
+    return;
   }
 
   if(!/^[^@]+@[^@]+\.[^@]+$/.test(emailVal)){
-    toast("Email non valida"); busy=false; return;
+    toast("Email non valida");
+    unlock(btn);
+    return;
   }
 
   if(!/^\d{5}$/.test(matVal)){
-    toast("Matricola non valida"); busy=false; return;
+    toast("Matricola non valida");
+    unlock(btn);
+    return;
   }
 
   currentUser.pin = pinVal;
@@ -241,7 +248,7 @@ function save(fromComplete=false){
   fetch(API + `?action=save&username=${encodeURIComponent(currentUser.username)}&pin=${pinVal}&email=${encodeURIComponent(emailVal)}&matricola=${matVal}`)
   .then(r=>r.json())
   .then(res=>{
-    busy=false;
+    unlock(btn);
 
     if(!res.success){
       toast(res.message || "Errore");
@@ -256,16 +263,14 @@ function save(fromComplete=false){
 
     toast("Salvato");
   })
-  .catch(err=>{
-    busy=false;
-    console.error(err);
+  .catch(()=>{
+    unlock(btn);
     toast("Errore rete");
   });
 }
 
-// ===== INIT
+// ===== INIT =====
 document.addEventListener("DOMContentLoaded", function(){
-
   loadUsers();
 
   document.getElementById("btnLogin").addEventListener("click", login);
