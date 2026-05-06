@@ -183,10 +183,12 @@ function complete(){
     return;
   }
 
-  currentUser.email = email;
-  currentUser.matricola = mat;
+currentUser.email = email;
+currentUser.matricola = mat;
 
-  save(true);
+busy = false;   // <-- FIX SEMPLICE E RISOLUTIVO
+save(true);
+
 }
 
 // ===== DASHBOARD
