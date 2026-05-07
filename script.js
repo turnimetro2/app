@@ -1,168 +1,39 @@
 // ===== CONFIGURAZIONE API =====
-const API = "https://script.google.com/macros/s/AKfycbyV3gZOi6Y9bm5z2czQv3T3I4wZL2OFgaH7K5mU5zM0iK7H7JuH-mIsUJYNdq2QeTA8/exec";
+// URL /exec della tua WebApp Apps Script
+const API = "https://script.google.com/macros/s/XXXXXXXXXXXX/exec";
 
 let currentUser = null;
 let isBusy = false;
-window.allUsers = [];
-
-// ===== ELEMENTI =====
-const boxLogin = document.getElementById("boxLogin");
-const boxComplete = document.getElementById("boxComplete");
-const boxDashboard = document.getElementById("boxDashboard");
-const boxCambioTurno = document.getElementById("boxCambioTurno");
-
-const selUser = document.getElementById("selUser");
-const pinInput = document.getElementById("pin");
-
-const email = document.getElementById("email");
-const matricola = document.getElementById("matricola");
-
-const d_user = document.getElementById("d_user");
-const d_pin = document.getElementById("d_pin");
-const d_email = document.getElementById("d_email");
-const d_mat = document.getElementById("d_mat");
-
-const btnLogin = document.getElementById("btnLogin");
-const btnComplete = document.getElementById("btnComplete");
-const btnSave = document.getElementById("btnSave");
-
-const btnCambioTurno = document.getElementById("btnCambioTurno");
-
-const ct_container = document.getElementById("ct_container");
-const ct_addUser = document.getElementById("ct_addUser");
-const ct_save = document.getElementById("ct_save");
-const ct_output = document.getElementById("ct_output");
+let allUsers = [];
+let ctUsers = []; // cambio turno solo in memoria
 
 // ===== TOAST =====
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.style.display = "block";
-
   setTimeout(() => {
     t.style.display = "none";
   }, 2200);
 }
 
-// ===== LOCK =====
+// ===== LOCK / UNLOCK PULSANTI =====
 function lock() {
   isBusy = true;
-  document.querySelectorAll("button")
-    .forEach(b => b.disabled = true);
+  document.querySelectorAll("button").forEach(b => b.disabled = true);
 }
-
 function unlock() {
   isBusy = false;
-  document.querySelectorAll("button")
-    .forEach(b => b.disabled = false);
+  document.querySelectorAll("button").forEach(b => b.disabled = false);
 }
 
-// ===== API =====
-async function apiCall(params) {
-
-  try {
-
-    // ===== GET USERS =====
-    if (params.action === "getUsers") {
-
-      const url = API + "?action=getUsers&t=" + Date.now();
-
-      const res = await fetch(url, {
-        method: "GET",
-        redirect: "follow"
-      });
-
-      const text = await res.text();
-
-      console.log("GET USERS RAW:", text);
-
-      // prova parsing sicuro
-      try {
-        return JSON.parse(text);
-      } catch (e) {
-        console.error("Risposta non JSON:", text);
-        throw new Error("Risposta non valida dal server");
-      }
-    }
-
-    // ===== POST =====
-    const res = await fetch(API, {
-      method: "POST",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(params)
-    });
-
-    const text = await res.text();
-
-    console.log("POST RAW:", text);
-
-    try {
-      return JSON.parse(text);
-    } catch (e) {
-      console.error("Risposta non JSON:", text);
-      throw new Error("Risposta non valida dal server");
-    }
-
-  } catch (err) {
-
-    console.error("API ERROR:", err);
-
-    return {
-      success: false,
-      message: "Errore comunicazione API"
-    };
-  }
+// ===== CHIAMATA API GENERICA =====
+function apiCall(params) {
+  const url = API + "?" + new URLSearchParams(params).toString();
+  return fetch(url).then(r => r.json());
 }
 
-// ===== LOAD USERS =====
-async function loadUsers() {
-
-  try {
-
-    const res = await apiCall({
-      action: "getUsers"
-    });
-
-    if (!res.success) {
-      toast("Errore caricamento utenti");
-      return;
-    }
-
-    selUser.innerHTML =
-      '<option value="">Seleziona utente</option>';
-
-    if (!Array.isArray(res.users)) {
-      toast("Formato utenti non valido");
-      return;
-    }
-
-    window.allUsers = res.users;
-
-    res.users.forEach(user => {
-
-      const opt = document.createElement("option");
-
-      opt.value = user;
-      opt.textContent = user;
-
-      selUser.appendChild(opt);
-    });
-
-  } catch (err) {
-
-    console.error(err);
-
-    toast("Errore rete utenti");
-
-    selUser.innerHTML =
-      '<option value="">Errore caricamento</option>';
-  }
-}
-
-// ===== SHOW BOX =====
+// ===== MOSTRA / NASCONDI BOX =====
 function showLogin() {
   boxLogin.classList.remove("hidden");
   boxComplete.classList.add("hidden");
@@ -184,400 +55,367 @@ function showDashboard() {
   boxCambioTurno.classList.add("hidden");
 }
 
-// ===== LOGIN =====
-async function doLogin() {
-
-  if (isBusy) return;
-
-  lock();
-
-  const username = selUser.value.trim();
-  const pin = pinInput.value.trim();
-
-  if (!username) {
-    toast("Seleziona utente");
-    unlock();
-    return;
-  }
-
-  if (!/^\d{6}$/.test(pin)) {
-    toast("PIN non valido");
-    unlock();
-    return;
-  }
-
-  const res = await apiCall({
-    action: "login",
-    username,
-    pin
-  });
-
-  if (!res.success) {
-    toast(res.message || "Login fallito");
-    unlock();
-    return;
-  }
-
-  currentUser = res.user;
-
-  localStorage.setItem(
-    "sessionUser",
-    JSON.stringify(currentUser)
-  );
-
-  if (
-    !currentUser.email ||
-    !currentUser.matricola
-  ) {
-
-    email.value = currentUser.email || "";
-    matricola.value = currentUser.matricola || "";
-
-    showComplete();
-
-  } else {
-
-    fillDashboard();
-    showDashboard();
-  }
-
-  unlock();
+// ===== CARICA UTENTI =====
+function loadUsers() {
+  apiCall({ action: "getUsers" })
+    .then(res => {
+      if (!res.success) {
+        toast("Errore caricamento utenti");
+        return;
+      }
+      const sel = document.getElementById("selUser");
+      sel.innerHTML = '<option value="">Seleziona utente</option>';
+      res.users.forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u;
+        opt.textContent = u;
+        sel.appendChild(opt);
+      });
+      allUsers = res.users;
+    })
+    .catch(() => {
+      toast("Errore rete (utenti)");
+    });
 }
 
-// ===== COMPLETE =====
-async function doComplete() {
-
+// ===== LOGIN =====
+function doLogin() {
   if (isBusy) return;
+  lock();
 
+  const username = selUser.value;
+  const pinVal   = pin.value.trim();
+
+  if (!username) {
+    toast("Seleziona un utente");
+    unlock();
+    return;
+  }
+  if (!/^\d{6}$/.test(pinVal)) {
+    toast("PIN non valido (6 cifre)");
+    unlock();
+    return;
+  }
+
+  apiCall({ action: "login", username, pin: pinVal })
+    .then(res => {
+      if (!res.success) {
+        toast(res.message || "Login fallito");
+        unlock();
+        return;
+      }
+
+      currentUser = res.user;
+      localStorage.setItem("sessionUser", JSON.stringify(currentUser));
+
+      if (!currentUser.email || !currentUser.matricola) {
+        email.value     = currentUser.email || "";
+        matricola.value = currentUser.matricola || "";
+        showComplete();
+      } else {
+        fillDashboard();
+        showDashboard();
+      }
+
+      unlock();
+    })
+    .catch(() => {
+      toast("Errore rete (login)");
+      unlock();
+    });
+}
+
+// ===== COMPLETA DATI DOPO LOGIN =====
+function doComplete() {
+  if (isBusy) return;
   lock();
 
   const emailVal = email.value.trim();
-  const matVal = matricola.value.trim();
+  const matVal   = matricola.value.trim();
 
   if (!/^[^@]+@[^@]+\.[^@]+$/.test(emailVal)) {
     toast("Email non valida");
     unlock();
     return;
   }
-
   if (!/^\d{5}$/.test(matVal)) {
-    toast("Matricola non valida");
+    toast("Matricola non valida (5 cifre)");
     unlock();
     return;
   }
 
-  const res = await apiCall({
-    action: "saveProfile",
-    username: currentUser.username,
-    pin: currentUser.pin,
-    email: emailVal,
+  const payload = {
+    action:    "saveProfile",
+    username:  currentUser.username,
+    pin:       currentUser.pin,
+    email:     emailVal,
     matricola: matVal
-  });
+  };
 
-  if (!res.success) {
-    toast(res.message || "Errore salvataggio");
-    unlock();
-    return;
-  }
+  apiCall(payload)
+    .then(res => {
+      if (!res.success) {
+        toast(res.message || "Errore salvataggio");
+        unlock();
+        return;
+      }
 
-  currentUser.email = emailVal;
-  currentUser.matricola = matVal;
+      currentUser.email     = emailVal;
+      currentUser.matricola = matVal;
+      localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
-  localStorage.setItem(
-    "sessionUser",
-    JSON.stringify(currentUser)
-  );
-
-  fillDashboard();
-  showDashboard();
-
-  toast("Dati salvati");
-
-  unlock();
+      fillDashboard();
+      showDashboard();
+      toast("Dati salvati");
+      unlock();
+    })
+    .catch(() => {
+      toast("Errore rete (salvataggio)");
+      unlock();
+    });
 }
 
-// ===== DASHBOARD =====
+// ===== RIEMPI DASHBOARD =====
 function fillDashboard() {
-
   d_user.value = currentUser.username;
-  d_pin.value = currentUser.pin;
+  d_pin.value  = currentUser.pin;
   d_email.value = currentUser.email || "";
-  d_mat.value = currentUser.matricola || "";
+  d_mat.value   = currentUser.matricola || "";
 }
 
-// ===== SAVE DASHBOARD =====
-async function doSaveDashboard() {
-
+// ===== SALVA DA DASHBOARD =====
+function doSaveDashboard() {
   if (isBusy) return;
-
   lock();
 
-  const pinVal = d_pin.value.trim();
-  const emailVal = d_email.value.trim();
-  const matVal = d_mat.value.trim();
+  const pinVal  = d_pin.value.trim();
+  const mailVal = d_email.value.trim();
+  const matVal  = d_mat.value.trim();
 
   if (!/^\d{6}$/.test(pinVal)) {
-    toast("PIN non valido");
+    toast("PIN non valido (6 cifre)");
     unlock();
     return;
   }
-
-  if (!/^[^@]+@[^@]+\.[^@]+$/.test(emailVal)) {
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(mailVal)) {
     toast("Email non valida");
     unlock();
     return;
   }
-
   if (!/^\d{5}$/.test(matVal)) {
-    toast("Matricola non valida");
+    toast("Matricola non valida (5 cifre)");
     unlock();
     return;
   }
 
-  const res = await apiCall({
-    action: "saveProfile",
-    username: currentUser.username,
-    pin: pinVal,
-    email: emailVal,
+  const payload = {
+    action:    "saveProfile",
+    username:  currentUser.username,
+    pin:       pinVal,
+    email:     mailVal,
     matricola: matVal
-  });
+  };
 
-  if (!res.success) {
-    toast(res.message || "Errore salvataggio");
-    unlock();
-    return;
-  }
+  apiCall(payload)
+    .then(res => {
+      if (!res.success) {
+        toast(res.message || "Errore salvataggio");
+        unlock();
+        return;
+      }
 
-  currentUser.pin = pinVal;
-  currentUser.email = emailVal;
-  currentUser.matricola = matVal;
+      currentUser.pin       = pinVal;
+      currentUser.email     = mailVal;
+      currentUser.matricola = matVal;
+      localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
-  localStorage.setItem(
-    "sessionUser",
-    JSON.stringify(currentUser)
-  );
-
-  toast("Dati aggiornati");
-
-  unlock();
+      toast("Dati aggiornati");
+      unlock();
+    })
+    .catch(() => {
+      toast("Errore rete (salvataggio)");
+      unlock();
+    });
 }
 
-// ===== RESTORE =====
-async function restoreSession() {
-
-  const saved =
-    localStorage.getItem("sessionUser");
-
+// ===== RIPRISTINA SESSIONE =====
+function restoreSession() {
+  const saved = localStorage.getItem("sessionUser");
   if (!saved) {
     showLogin();
     return;
   }
 
   try {
-
     const user = JSON.parse(saved);
-
-    const res = await apiCall({
-      action: "login",
-      username: user.username,
-      pin: user.pin
-    });
-
-    if (!res.success) {
-
-      localStorage.removeItem("sessionUser");
-
+    if (!user || !user.username || !user.pin) {
       showLogin();
-
       return;
     }
 
-    currentUser = res.user;
+    apiCall({ action: "login", username: user.username, pin: user.pin })
+      .then(res => {
+        if (!res.success) {
+          localStorage.removeItem("sessionUser");
+          showLogin();
+          return;
+        }
 
-    fillDashboard();
+        currentUser = res.user;
 
-    showDashboard();
+        if (!currentUser.email || !currentUser.matricola) {
+          email.value     = currentUser.email || "";
+          matricola.value = currentUser.matricola || "";
+          showComplete();
+        } else {
+          fillDashboard();
+          showDashboard();
+        }
+      })
+      .catch(() => {
+        showLogin();
+      });
 
-  } catch (err) {
-
-    console.error(err);
-
+  } catch (e) {
     showLogin();
   }
 }
 
-// ===== CAMBIO TURNO =====
-let ctUsers = [];
-
+// ===== CAMBIO TURNO (solo lato client) =====
 function showCambioTurno() {
-
   boxCambioTurno.classList.remove("hidden");
-
+  if (ctUsers.length === 0) {
+    ctUsers = [
+      { user: currentUser.username, turno: "" },
+      { user: "", turno: "" }
+    ];
+  }
   renderCambioTurno();
 }
 
 function renderCambioTurno() {
-
-  ct_container.innerHTML = "";
+  const container = ct_container;
+  container.innerHTML = "";
 
   ctUsers.forEach((u, index) => {
-
     const row = document.createElement("div");
-
     row.className = "row";
 
     const colUser = document.createElement("div");
-
     if (index === 0) {
-
-      colUser.innerHTML =
-        `<input type="text" value="${currentUser.username}" disabled>`;
-
+      colUser.innerHTML = `<input type="text" value="${currentUser.username}" disabled>`;
     } else {
-
-      let options =
-        `<option value="">Seleziona utente</option>`;
-
-      window.allUsers.forEach(name => {
-
-        options += `
-          <option value="${name}"
-          ${name === u.user ? "selected" : ""}>
-          ${name}
-          </option>
-        `;
+      let options = `<option value="">Seleziona utente</option>`;
+      allUsers.forEach(name => {
+        options += `<option value="${name}" ${name === u.user ? "selected" : ""}>${name}</option>`;
       });
-
-      colUser.innerHTML =
-        `<select data-index="${index}" class="ct_user">${options}</select>`;
+      colUser.innerHTML = `<select data-index="${index}" class="ct_user">${options}</select>`;
     }
 
     const colTurno = document.createElement("div");
-
     colTurno.innerHTML = `
-      <input
-        type="text"
-        class="ct_turno"
-        data-index="${index}"
-        placeholder="Turno"
-        value="${u.turno || ""}">
+      <input type="text" class="ct_turno" data-index="${index}" placeholder="Turno" value="${u.turno || ""}">
     `;
 
     row.appendChild(colUser);
     row.appendChild(colTurno);
-
-    ct_container.appendChild(row);
+    container.appendChild(row);
   });
 
-  document.querySelectorAll(".ct_user")
-    .forEach(sel => {
-
-      sel.addEventListener("change", e => {
-
-        const i =
-          Number(e.target.dataset.index);
-
-        ctUsers[i].user =
-          e.target.value;
-      });
+  document.querySelectorAll(".ct_user").forEach(sel => {
+    sel.addEventListener("change", e => {
+      const i = Number(e.target.dataset.index);
+      ctUsers[i].user = e.target.value;
     });
+  });
 
-  document.querySelectorAll(".ct_turno")
-    .forEach(inp => {
-
-      inp.addEventListener("input", e => {
-
-        const i =
-          Number(e.target.dataset.index);
-
-        ctUsers[i].turno =
-          e.target.value.trim();
-      });
+  document.querySelectorAll(".ct_turno").forEach(inp => {
+    inp.addEventListener("input", e => {
+      const i = Number(e.target.dataset.index);
+      ctUsers[i].turno = e.target.value.trim();
     });
+  });
 }
 
 function addCambioTurnoUser() {
-
   if (ctUsers.length >= 10) {
     toast("Max 10 utenti");
     return;
   }
-
-  ctUsers.push({
-    user: "",
-    turno: ""
-  });
-
+  ctUsers.push({ user: "", turno: "" });
   renderCambioTurno();
 }
 
 function saveCambioTurno() {
+  if (isBusy) return;
+  lock();
+
+  if (ctUsers.length < 2) {
+    toast("Inserisci almeno 2 utenti");
+    unlock();
+    return;
+  }
 
   for (let i = 0; i < ctUsers.length; i++) {
-
     const u = ctUsers[i];
 
     if (i > 0 && !u.user) {
-      toast("Seleziona utenti");
+      toast("Seleziona tutti gli utenti");
+      unlock();
       return;
     }
-
     if (!/^\d{2,3}$/.test(u.turno)) {
-      toast("Turno non valido");
+      toast("Turno non valido (2-3 cifre)");
+      unlock();
       return;
     }
   }
 
-  let out =
-    "<b>Riepilogo cambio turno:</b><br><br>";
-
+  let out = "<b>Riepilogo cambio turno:</b><br><br>";
   ctUsers.forEach(u => {
-
     out += `${u.user} → turno ${u.turno}<br>`;
   });
-
   ct_output.innerHTML = out;
+
+  // Nessun salvataggio su Google Sheet: solo visualizzazione
+  unlock();
 }
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
+  // cache elementi
+  window.boxLogin       = document.getElementById("boxLogin");
+  window.boxComplete    = document.getElementById("boxComplete");
+  window.boxDashboard   = document.getElementById("boxDashboard");
+  window.boxCambioTurno = document.getElementById("boxCambioTurno");
+
+  window.selUser   = document.getElementById("selUser");
+  window.pin       = document.getElementById("pin");
+  window.email     = document.getElementById("email");
+  window.matricola = document.getElementById("matricola");
+
+  window.d_user = document.getElementById("d_user");
+  window.d_pin  = document.getElementById("d_pin");
+  window.d_email = document.getElementById("d_email");
+  window.d_mat   = document.getElementById("d_mat");
+
+  window.ct_container = document.getElementById("ct_container");
+  window.ct_output    = document.getElementById("ct_output");
+
+  const btnLogin       = document.getElementById("btnLogin");
+  const btnComplete    = document.getElementById("btnComplete");
+  const btnSave        = document.getElementById("btnSave");
+  const btnCambioTurno = document.getElementById("btnCambioTurno");
+  const ct_addUser     = document.getElementById("ct_addUser");
+  const ct_save        = document.getElementById("ct_save");
 
   btnLogin.addEventListener("click", doLogin);
-
-  btnComplete.addEventListener(
-    "click",
-    doComplete
-  );
-
-  btnSave.addEventListener(
-    "click",
-    doSaveDashboard
-  );
-
-  btnCambioTurno.addEventListener(
-    "click",
-    () => {
-
-      ctUsers = [{
-        user: currentUser.username,
-        turno: ""
-      }];
-
-      showCambioTurno();
-    }
-  );
-
-  ct_addUser.addEventListener(
-    "click",
-    addCambioTurnoUser
-  );
-
-  ct_save.addEventListener(
-    "click",
-    saveCambioTurno
-  );
+  btnComplete.addEventListener("click", doComplete);
+  btnSave.addEventListener("click", doSaveDashboard);
+  btnCambioTurno.addEventListener("click", showCambioTurno);
+  ct_addUser.addEventListener("click", addCambioTurnoUser);
+  ct_save.addEventListener("click", saveCambioTurno);
 
   loadUsers();
-
   restoreSession();
 });
