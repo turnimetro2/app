@@ -444,5 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ct_save.addEventListener("click", saveCambioTurno);
 
   loadUsers();
+  loadUserDetails();
+
   restoreSession();
 });
