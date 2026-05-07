@@ -395,17 +395,18 @@ function saveCambioTurno() {
     }
   }
 
-  let out = `DATA: ${dateFormatted}<br><br>`;
+  let out = `${dateFormatted}\n\n`;
 
   ctUsers.forEach(u => {
     const mat = window.userDetails[u.user]?.matricola || "00000";
-    out += `${u.user} matr ${mat} turno ${u.turno} A${u.turno}<br>`;
+    out += `${u.user} matr ${mat} turno A${u.turno}\n`;
   });
 
-  ct_output.innerHTML = out;
+  ct_output.innerText = out;
 
   unlock();
 }
+
 
 function copyCambioTurno() {
   const text = ct_output.innerText;  // prende il riepilogo così com’è
