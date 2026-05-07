@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Utenti</title>
-
+<title>Cambi Turno - WebApp</title>
 <style>
   * { box-sizing: border-box; }
 
@@ -101,6 +100,8 @@
 
   <!-- LOGIN -->
   <div id="boxLogin" class="card">
+    <h2 style="font-size:18px;margin-top:0;">Login</h2>
+
     <label for="selUser">Seleziona username</label>
     <select id="selUser">
       <option value="">Caricamento utenti...</option>
@@ -127,7 +128,7 @@
 
   <!-- DASHBOARD -->
   <div id="boxDashboard" class="card hidden">
-    <h2 style="font-size:18px;margin-top:0;">I tuoi dati</h2>
+    <h2 style="font-size:18px;margin-top:0;">Dashboard</h2>
 
     <label for="d_user">Username</label>
     <input id="d_user" type="text" disabled>
@@ -142,12 +143,10 @@
     <input id="d_mat" type="text" inputmode="numeric" maxlength="5">
 
     <button id="btnSave">Salva</button>
-
-    <!-- NUOVO: pulsante cambio turno -->
     <button id="btnCambioTurno" style="margin-top:10px;background:#455a64;">Cambio turno</button>
   </div>
 
-  <!-- SEZIONE CAMBIO TURNO -->
+  <!-- CAMBIO TURNO (solo visualizzazione locale) -->
   <div id="boxCambioTurno" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
 
@@ -165,6 +164,5 @@
 <div class="version">Release WebApp 0.1</div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
