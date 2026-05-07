@@ -415,6 +415,19 @@ function copyCambioTurno() {
     .catch(() => toast("Errore copia"));
 }
 
+function resetCambioTurno() {
+  ctUsers = [
+    { user: currentUser.username, turno: "" },
+    { user: "", turno: "" }
+  ];
+
+  ct_date.value = "";       // reset data
+  ct_output.innerHTML = ""; // reset riepilogo
+
+  renderCambioTurno();
+  toast("Reset effettuato");
+}
+
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
   // cache elementi
