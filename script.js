@@ -398,7 +398,8 @@ function saveCambioTurno() {
   let out = `${dateFormatted}\n\n`;
 
   ctUsers.forEach(u => {
-    const mat = window.userDetails[u.user]?.matricola || "00000";
+    const mat = window.userDetails[u.user]?.matricola || "-";
+
     out += `${u.user} matr ${mat} turno A${u.turno}\n`;
   });
 
