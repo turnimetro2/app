@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" ry="32" fill="#1a237e"/>
+
+  <!-- Freccia che va a destra -->
+  <path d="M60 70 H130 L110 50 M130 70 L110 90"
+        fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Freccia che va a sinistra -->
+  <path d="M132 122 H62 L82 142 M62 122 L82 102"
+        fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Punto centrale (simbolo di nodo/scambio) -->
+  <circle cx="96" cy="96" r="10" fill="#ffffff"/>
+</svg>
