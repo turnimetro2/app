@@ -407,6 +407,12 @@ function saveCambioTurno() {
   unlock();
 }
 
+function copyCambioTurno() {
+  const text = ct_output.innerText;  // prende il riepilogo così com’è
+  navigator.clipboard.writeText(text)
+    .then(() => toast("Copiato negli appunti"))
+    .catch(() => toast("Errore copia"));
+}
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
