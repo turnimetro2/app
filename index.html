@@ -83,6 +83,13 @@
     z-index: 999;
   }
 
+  .version {
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+    margin-top: 10px;
+  }
+
   .row {
     display: flex;
     gap: 8px;
@@ -96,7 +103,6 @@
 <body>
 
 <div class="container">
-  <h1>Accesso Utente</h1>
 
   <!-- LOGIN -->
   <div id="boxLogin" class="card">
@@ -146,12 +152,14 @@
 
 <div id="toast"></div>
 
+<div class="version">Release WebApp 0.1</div>
+
 <script>
 // ===== CONFIGURAZIONE API =====
-const API = "https://script.google.com/macros/s/AKfycbzb-vGGb9tOa9PVnuuHykczWEoJpL1yMEq5Oqv59z72IMQfaMRobmwFPXJb5XZH0x2-/exec"; // es: https://script.google.com/macros/s/XXX/exec
+const API = "https://script.google.com/macros/s/AKfycbzb-vGGb9tOa9PVnuuHykczWEoJpL1yMEq5Oqv59z72IMQfaMRobmwFPXJb5XZH0x2-/exec";
 
 let currentUser = null;
-let isBusy = false; // per prevenire doppi click
+let isBusy = false;
 
 // ===== TOAST =====
 function toast(msg) {
@@ -163,18 +171,17 @@ function toast(msg) {
   }, 2200);
 }
 
-// ===== LOCK / UNLOCK PULSANTI =====
+// ===== LOCK / UNLOCK =====
 function lock() {
   isBusy = true;
   document.querySelectorAll("button").forEach(b => b.disabled = true);
 }
-
 function unlock() {
   isBusy = false;
   document.querySelectorAll("button").forEach(b => b.disabled = false);
 }
 
-// ===== CHIAMATA API GENERICA =====
+// ===== API CALL =====
 function apiCall(params) {
   const url = API + "?" + new URLSearchParams(params).toString();
   return fetch(url).then(r => r.json());
@@ -197,9 +204,7 @@ function loadUsers() {
         sel.appendChild(opt);
       });
     })
-    .catch(() => {
-      toast("Errore rete (utenti)");
-    });
+    .catch(() => toast("Errore rete (utenti)"));
 }
 
 // ===== MOSTRA / NASCONDI BOX =====
@@ -227,7 +232,7 @@ function doLogin() {
   lock();
 
   const username = document.getElementById("selUser").value;
-  const pin      = document.getElementById("pin").value.trim();
+  const pin = document.getElementById("pin").value.trim();
 
   if (!username) {
     toast("Seleziona un utente");
@@ -249,16 +254,13 @@ function doLogin() {
       }
 
       currentUser = res.user;
-      // Salvo sessione
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
       if (!currentUser.email || !currentUser.matricola) {
-        // Deve completare i dati
         document.getElementById("email").value = currentUser.email || "";
         document.getElementById("matricola").value = currentUser.matricola || "";
         showComplete();
       } else {
-        // Ha già tutti i dati -> dashboard
         fillDashboard();
         showDashboard();
       }
@@ -271,13 +273,13 @@ function doLogin() {
     });
 }
 
-// ===== COMPLETA DATI DOPO LOGIN =====
+// ===== COMPLETA DATI =====
 function doComplete() {
   if (isBusy) return;
   lock();
 
   const email = document.getElementById("email").value.trim();
-  const mat   = document.getElementById("matricola").value.trim();
+  const mat = document.getElementById("matricola").value.trim();
 
   if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
     toast("Email non valida");
@@ -291,10 +293,10 @@ function doComplete() {
   }
 
   const payload = {
-    action:    "saveProfile",
-    username:  currentUser.username,
-    pin:       currentUser.pin,
-    email:     email,
+    action: "saveProfile",
+    username: currentUser.username,
+    pin: currentUser.pin,
+    email,
     matricola: mat
   };
 
@@ -306,7 +308,7 @@ function doComplete() {
         return;
       }
 
-      currentUser.email     = email;
+      currentUser.email = email;
       currentUser.matricola = mat;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
@@ -325,19 +327,19 @@ function doComplete() {
 function fillDashboard() {
   if (!currentUser) return;
   document.getElementById("d_user").value = currentUser.username;
-  document.getElementById("d_pin").value  = currentUser.pin;
+  document.getElementById("d_pin").value = currentUser.pin;
   document.getElementById("d_email").value = currentUser.email || "";
-  document.getElementById("d_mat").value   = currentUser.matricola || "";
+  document.getElementById("d_mat").value = currentUser.matricola || "";
 }
 
-// ===== SALVA DA DASHBOARD =====
+// ===== SALVA DASHBOARD =====
 function doSaveDashboard() {
   if (isBusy) return;
   lock();
 
-  const pin  = document.getElementById("d_pin").value.trim();
+  const pin = document.getElementById("d_pin").value.trim();
   const mail = document.getElementById("d_email").value.trim();
-  const mat  = document.getElementById("d_mat").value.trim();
+  const mat = document.getElementById("d_mat").value.trim();
 
   if (!/^\d{6}$/.test(pin)) {
     toast("PIN non valido (6 cifre)");
@@ -356,10 +358,10 @@ function doSaveDashboard() {
   }
 
   const payload = {
-    action:    "saveProfile",
-    username:  currentUser.username,
-    pin:       pin,
-    email:     mail,
+    action: "saveProfile",
+    username: currentUser.username,
+    pin,
+    email: mail,
     matricola: mat
   };
 
@@ -371,8 +373,8 @@ function doSaveDashboard() {
         return;
       }
 
-      currentUser.pin       = pin;
-      currentUser.email     = mail;
+      currentUser.pin = pin;
+      currentUser.email = mail;
       currentUser.matricola = mat;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
@@ -400,11 +402,9 @@ function restoreSession() {
       return;
     }
 
-    // Provo un login silenzioso per verificare che esista ancora
     apiCall({ action: "login", username: user.username, pin: user.pin })
       .then(res => {
         if (!res.success) {
-          // Sessione non più valida
           localStorage.removeItem("sessionUser");
           showLogin();
           return;
@@ -421,10 +421,7 @@ function restoreSession() {
           showDashboard();
         }
       })
-      .catch(() => {
-        // In caso di errore rete, almeno mostro login
-        showLogin();
-      });
+      .catch(() => showLogin());
 
   } catch (e) {
     showLogin();
@@ -433,15 +430,11 @@ function restoreSession() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
-  // Eventi
   document.getElementById("btnLogin").addEventListener("click", doLogin);
   document.getElementById("btnComplete").addEventListener("click", doComplete);
   document.getElementById("btnSave").addEventListener("click", doSaveDashboard);
 
-  // Carico utenti
   loadUsers();
-
-  // Provo a ripristinare sessione
   restoreSession();
 });
 </script>
