@@ -448,6 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnCambioTurno.addEventListener("click", showCambioTurno);
   ct_addUser.addEventListener("click", addCambioTurnoUser);
   ct_save.addEventListener("click", saveCambioTurno);
+document.getElementById("ct_copy").addEventListener("click", copyCambioTurno);
 
   loadUsers();
   loadUserDetails();
