@@ -77,7 +77,7 @@ input, select, button {
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbxdbSBf9ucDjG0w4qJbHxJaR-ZCaSZKwDF58cEWTrSrhMFVACobCFuA8SprZuVIpWpC/exec";
+const API = "https://script.google.com/macros/s/AKfycbwXq8aMu-rCGrQSED-CqNqPDkpuVy_RZLzAP6tSH_-ncwI01tqTapjXO9p_i72oGNN6/exec";
 
 let currentUser = null;
 
@@ -218,11 +218,12 @@ function save(fromComplete=false, btnOverride=null){
     emailVal = currentUser.email;
     matVal = currentUser.matricola;
   } else {
-    pinVal = document.getElementById("d_pin").value;
-    emailVal = document.getElementById("d_email").value;
-    matVal = document.getElementById("d_mat").value;
+    pinVal = document.getElementById("d_pin").value.trim();
+    emailVal = document.getElementById("d_email").value.trim();
+    matVal = document.getElementById("d_mat").value.trim();
   }
 
+  // VALIDAZIONI FRONTEND
   if(!/^\d{6}$/.test(pinVal)){
     toast("PIN non valido");
     unlock(btn);
@@ -241,11 +242,15 @@ function save(fromComplete=false, btnOverride=null){
     return;
   }
 
-  currentUser.pin = pinVal;
-  currentUser.email = emailVal;
-  currentUser.matricola = matVal;
+  // AGGIORNO currentUser
+  currentUser = {
+    username: currentUser.username,
+    pin: pinVal,
+    email: emailVal,
+    matricola: matVal
+  };
 
-  fetch(API + `?action=save&username=${encodeURIComponent(currentUser.username)}&pin=${pinVal}&email=${encodeURIComponent(emailVal)}&matricola=${matVal}`)
+  fetch(API + `?action=save&username=${encodeURIComponent(currentUser.username)}&pin=${encodeURIComponent(pinVal)}&email=${encodeURIComponent(emailVal)}&matricola=${encodeURIComponent(matVal)}`)
   .then(r=>r.json())
   .then(res=>{
     unlock(btn);
@@ -268,6 +273,7 @@ function save(fromComplete=false, btnOverride=null){
     toast("Errore rete");
   });
 }
+
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", function(){
