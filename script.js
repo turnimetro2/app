@@ -64,7 +64,7 @@ function loadUsers() {
         return;
       }
       const sel = document.getElementById("selUser");
-      sel.innerHTML = '<option value="">Seleziona utente</option>';
+      sel.innerHTML = '<option value="">Seleziona collega</option>';
       res.users.forEach(u => {
         const opt = document.createElement("option");
         opt.value = u;
@@ -315,7 +315,7 @@ function renderCambioTurno() {
     if (index === 0) {
       colUser.innerHTML = `<input type="text" value="${currentUser.username}" disabled>`;
     } else {
-      let options = `<option value="">Seleziona utente</option>`;
+      let options = `<option value="">Seleziona collega</option>`;
       allUsers.forEach(name => {
         options += `<option value="${name}" ${name === u.user ? "selected" : ""}>${name}</option>`;
       });
