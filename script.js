@@ -65,10 +65,7 @@ async function apiCall(params) {
     // ===== GET USERS =====
     if (params.action === "getUsers") {
 
-      const url =
-        API +
-        "?action=getUsers&t=" +
-        Date.now();
+      const url = API + "?action=getUsers&t=" + Date.now();
 
       const res = await fetch(url, {
         method: "GET",
@@ -79,7 +76,13 @@ async function apiCall(params) {
 
       console.log("GET USERS RAW:", text);
 
-      return JSON.parse(text);
+      // prova parsing sicuro
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error("Risposta non JSON:", text);
+        throw new Error("Risposta non valida dal server");
+      }
     }
 
     // ===== POST =====
@@ -96,15 +99,20 @@ async function apiCall(params) {
 
     console.log("POST RAW:", text);
 
-    return JSON.parse(text);
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      console.error("Risposta non JSON:", text);
+      throw new Error("Risposta non valida dal server");
+    }
 
   } catch (err) {
 
-    console.error(err);
+    console.error("API ERROR:", err);
 
     return {
       success: false,
-      message: "Errore rete/API"
+      message: "Errore comunicazione API"
     };
   }
 }
