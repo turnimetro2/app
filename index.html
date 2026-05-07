@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login Utenti</title>
+
 <style>
   * { box-sizing: border-box; }
 
@@ -18,12 +19,6 @@
     max-width: 420px;
     margin: 0 auto;
     padding: 16px;
-  }
-
-  h1 {
-    font-size: 20px;
-    text-align: center;
-    margin: 12px 0 20px;
   }
 
   .card {
@@ -147,28 +142,46 @@
     <input id="d_mat" type="text" inputmode="numeric" maxlength="5">
 
     <button id="btnSave">Salva</button>
+
+    <!-- NUOVO: pulsante cambio turno -->
+    <button id="btnCambioTurno" style="margin-top:10px;background:#455a64;">Cambio turno</button>
   </div>
+
+  <!-- SEZIONE CAMBIO TURNO -->
+  <div id="boxCambioTurno" class="card hidden">
+    <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
+
+    <div id="ct_container"></div>
+
+    <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi utente</button>
+    <button id="ct_save" style="background:#1976d2;margin-top:10px;">Salva</button>
+
+    <div id="ct_output" style="margin-top:15px;font-size:14px;color:#333;"></div>
+  </div>
+
 </div>
 
 <div id="toast"></div>
-
 <div class="version">Release WebApp 0.1</div>
 
-<script>
+<script src="script.js"></script>
+
+</body>
+</html>
+
 // ===== CONFIGURAZIONE API =====
 const API = "https://script.google.com/macros/s/AKfycbzb-vGGb9tOa9PVnuuHykczWEoJpL1yMEq5Oqv59z72IMQfaMRobmwFPXJb5XZH0x2-/exec";
 
 let currentUser = null;
 let isBusy = false;
+window.allUsers = [];
 
 // ===== TOAST =====
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.style.display = "block";
-  setTimeout(() => {
-    t.style.display = "none";
-  }, 2200);
+  setTimeout(() => t.style.display = "none", 2200);
 }
 
 // ===== LOCK / UNLOCK =====
@@ -188,7 +201,8 @@ function apiCall(params) {
 }
 
 // ===== CARICA UTENTI =====
-function loadUsers() {
+const originalLoadUsers = loadUsers;
+loadUsers = function() {
   apiCall({ action: "getUsers" })
     .then(res => {
       if (!res.success) {
@@ -203,27 +217,32 @@ function loadUsers() {
         opt.textContent = u;
         sel.appendChild(opt);
       });
+
+      window.allUsers = res.users;
     })
     .catch(() => toast("Errore rete (utenti)"));
-}
+};
 
 // ===== MOSTRA / NASCONDI BOX =====
 function showLogin() {
-  document.getElementById("boxLogin").classList.remove("hidden");
-  document.getElementById("boxComplete").classList.add("hidden");
-  document.getElementById("boxDashboard").classList.add("hidden");
+  boxLogin.classList.remove("hidden");
+  boxComplete.classList.add("hidden");
+  boxDashboard.classList.add("hidden");
+  boxCambioTurno.classList.add("hidden");
 }
 
 function showComplete() {
-  document.getElementById("boxLogin").classList.add("hidden");
-  document.getElementById("boxComplete").classList.remove("hidden");
-  document.getElementById("boxDashboard").classList.add("hidden");
+  boxLogin.classList.add("hidden");
+  boxComplete.classList.remove("hidden");
+  boxDashboard.classList.add("hidden");
+  boxCambioTurno.classList.add("hidden");
 }
 
 function showDashboard() {
-  document.getElementById("boxLogin").classList.add("hidden");
-  document.getElementById("boxComplete").classList.add("hidden");
-  document.getElementById("boxDashboard").classList.remove("hidden");
+  boxLogin.classList.add("hidden");
+  boxComplete.classList.add("hidden");
+  boxDashboard.classList.remove("hidden");
+  boxCambioTurno.classList.add("hidden");
 }
 
 // ===== LOGIN =====
@@ -231,8 +250,8 @@ function doLogin() {
   if (isBusy) return;
   lock();
 
-  const username = document.getElementById("selUser").value;
-  const pin = document.getElementById("pin").value.trim();
+  const username = selUser.value;
+  const pin = pinInput.value.trim();
 
   if (!username) {
     toast("Seleziona un utente");
@@ -257,8 +276,8 @@ function doLogin() {
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
       if (!currentUser.email || !currentUser.matricola) {
-        document.getElementById("email").value = currentUser.email || "";
-        document.getElementById("matricola").value = currentUser.matricola || "";
+        email.value = currentUser.email || "";
+        matricola.value = currentUser.matricola || "";
         showComplete();
       } else {
         fillDashboard();
@@ -278,15 +297,15 @@ function doComplete() {
   if (isBusy) return;
   lock();
 
-  const email = document.getElementById("email").value.trim();
-  const mat = document.getElementById("matricola").value.trim();
+  const emailVal = email.value.trim();
+  const matVal = matricola.value.trim();
 
-  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(emailVal)) {
     toast("Email non valida");
     unlock();
     return;
   }
-  if (!/^\d{5}$/.test(mat)) {
+  if (!/^\d{5}$/.test(matVal)) {
     toast("Matricola non valida (5 cifre)");
     unlock();
     return;
@@ -296,8 +315,8 @@ function doComplete() {
     action: "saveProfile",
     username: currentUser.username,
     pin: currentUser.pin,
-    email,
-    matricola: mat
+    email: emailVal,
+    matricola: matVal
   };
 
   apiCall(payload)
@@ -308,8 +327,8 @@ function doComplete() {
         return;
       }
 
-      currentUser.email = email;
-      currentUser.matricola = mat;
+      currentUser.email = emailVal;
+      currentUser.matricola = matVal;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
       fillDashboard();
@@ -323,35 +342,33 @@ function doComplete() {
     });
 }
 
-// ===== RIEMPI DASHBOARD =====
+// ===== DASHBOARD =====
 function fillDashboard() {
-  if (!currentUser) return;
-  document.getElementById("d_user").value = currentUser.username;
-  document.getElementById("d_pin").value = currentUser.pin;
-  document.getElementById("d_email").value = currentUser.email || "";
-  document.getElementById("d_mat").value = currentUser.matricola || "";
+  d_user.value = currentUser.username;
+  d_pin.value = currentUser.pin;
+  d_email.value = currentUser.email || "";
+  d_mat.value = currentUser.matricola || "";
 }
 
-// ===== SALVA DASHBOARD =====
 function doSaveDashboard() {
   if (isBusy) return;
   lock();
 
-  const pin = document.getElementById("d_pin").value.trim();
-  const mail = document.getElementById("d_email").value.trim();
-  const mat = document.getElementById("d_mat").value.trim();
+  const pinVal = d_pin.value.trim();
+  const mailVal = d_email.value.trim();
+  const matVal = d_mat.value.trim();
 
-  if (!/^\d{6}$/.test(pin)) {
+  if (!/^\d{6}$/.test(pinVal)) {
     toast("PIN non valido (6 cifre)");
     unlock();
     return;
   }
-  if (!/^[^@]+@[^@]+\.[^@]+$/.test(mail)) {
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(mailVal)) {
     toast("Email non valida");
     unlock();
     return;
   }
-  if (!/^\d{5}$/.test(mat)) {
+  if (!/^\d{5}$/.test(matVal)) {
     toast("Matricola non valida (5 cifre)");
     unlock();
     return;
@@ -360,9 +377,9 @@ function doSaveDashboard() {
   const payload = {
     action: "saveProfile",
     username: currentUser.username,
-    pin,
-    email: mail,
-    matricola: mat
+    pin: pinVal,
+    email: mailVal,
+    matricola: matVal
   };
 
   apiCall(payload)
@@ -373,9 +390,9 @@ function doSaveDashboard() {
         return;
       }
 
-      currentUser.pin = pin;
-      currentUser.email = mail;
-      currentUser.matricola = mat;
+      currentUser.pin = pinVal;
+      currentUser.email = mailVal;
+      currentUser.matricola = matVal;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
       toast("Dati aggiornati");
@@ -413,8 +430,8 @@ function restoreSession() {
         currentUser = res.user;
 
         if (!currentUser.email || !currentUser.matricola) {
-          document.getElementById("email").value = currentUser.email || "";
-          document.getElementById("matricola").value = currentUser.matricola || "";
+          email.value = currentUser.email || "";
+          matricola.value = currentUser.matricola || "";
           showComplete();
         } else {
           fillDashboard();
@@ -428,16 +445,107 @@ function restoreSession() {
   }
 }
 
+// ===== CAMBIO TURNO =====
+let ctUsers = [];
+
+function showCambioTurno() {
+  boxCambioTurno.classList.remove("hidden");
+  renderCambioTurno();
+}
+
+function renderCambioTurno() {
+  const container = ct_container;
+  container.innerHTML = "";
+
+  ctUsers.forEach((u, index) => {
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const colUser = document.createElement("div");
+    if (index === 0) {
+      colUser.innerHTML = `<input type="text" value="${currentUser.username}" disabled>`;
+    } else {
+      let options = `<option value="">Seleziona utente</option>`;
+      window.allUsers.forEach(name => {
+        options += `<option value="${name}" ${name === u.user ? "selected" : ""}>${name}</option>`;
+      });
+      colUser.innerHTML = `<select data-index="${index}" class="ct_user">${options}</select>`;
+    }
+
+    const colTurno = document.createElement("div");
+    colTurno.innerHTML = `
+      <input type="text" class="ct_turno" data-index="${index}" placeholder="Turno" value="${u.turno || ""}">
+    `;
+
+    row.appendChild(colUser);
+    row.appendChild(colTurno);
+    container.appendChild(row);
+  });
+
+  document.querySelectorAll(".ct_user").forEach(sel => {
+    sel.addEventListener("change", e => {
+      const i = Number(e.target.dataset.index);
+      ctUsers[i].user = e.target.value;
+    });
+  });
+
+  document.querySelectorAll(".ct_turno").forEach(inp => {
+    inp.addEventListener("input", e => {
+      const i = Number(e.target.dataset.index);
+      ctUsers[i].turno = e.target.value.trim();
+    });
+  });
+}
+
+function addCambioTurnoUser() {
+  if (ctUsers.length >= 10) {
+    toast("Max 10 utenti");
+    return;
+  }
+  ctUsers.push({ user: "", turno: "" });
+  renderCambioTurno();
+}
+
+function saveCambioTurno() {
+  for (let i = 0; i < ctUsers.length; i++) {
+    const u = ctUsers[i];
+
+    if (i > 0 && !u.user) {
+      toast("Seleziona tutti gli utenti");
+      return;
+    }
+    if (!/^\d{2,3}$/.test(u.turno)) {
+      toast("Turno non valido (2-3 cifre)");
+      return;
+    }
+  }
+
+  let out = "<b>Riepilogo cambio turno:</b><br><br>";
+  ctUsers.forEach(u => {
+    out += `${u.user} → turno ${u.turno}<br>`;
+  });
+
+  ct_output.innerHTML = out;
+}
+
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("btnLogin").addEventListener("click", doLogin);
-  document.getElementById("btnComplete").addEventListener("click", doComplete);
-  document.getElementById("btnSave").addEventListener("click", doSaveDashboard);
+  btnLogin.addEventListener("click", doLogin);
+  btnComplete.addEventListener("click", doComplete);
+  btnSave.addEventListener("click", doSaveDashboard);
+
+  btnCambioTurno.addEventListener("click", () => {
+    ctUsers = [{ user: currentUser.username, turno: "" }];
+    showCambioTurno();
+  });
+
+  ct_addUser.addEventListener("click", addCambioTurnoUser);
+  ct_save.addEventListener("click", saveCambioTurno);
 
   loadUsers();
   restoreSession();
 });
-</script>
 
-</body>
-</html>
+   
+
+
