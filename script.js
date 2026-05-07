@@ -64,7 +64,7 @@ function loadUsers() {
         return;
       }
       const sel = document.getElementById("selUser");
-      sel.innerHTML = '<option value="">Seleziona collega</option>';
+      sel.innerHTML = '<option value="">Seleziona utente</option>';
       res.users.forEach(u => {
         const opt = document.createElement("option");
         opt.value = u;
