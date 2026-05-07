@@ -1,6 +1,6 @@
 // ===== CONFIGURAZIONE API =====
 // URL /exec della tua WebApp Apps Script
-const API = "https://script.google.com/macros/s/XXXXXXXXXXXX/exec";
+const API = "https://script.google.com/macros/s/AKfycbzs_c7X9MmZNDBrXzmqHsH4U4BVYomilCVOfCvIDolN2tNkZfM2v55Vl6h8sGJISYIn/exec";
 
 let currentUser = null;
 let isBusy = false;
