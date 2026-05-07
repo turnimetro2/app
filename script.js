@@ -1,5 +1,5 @@
 // ===== CONFIGURAZIONE API =====
-const API = "https://script.google.com/macros/s/AKfycbzb-vGGb9tOa9PVnuuHykczWEoJpL1yMEq5Oqv59z72IMQfaMRobmwFPXJb5XZH0x2-/exec";
+const API = "https://script.google.com/macros/s/AKfycbyV3gZOi6Y9bm5z2czQv3T3I4wZL2OFgaH7K5mU5zM0iK7H7JuH-mIsUJYNdq2QeTA8/exec";
 
 let currentUser = null;
 let isBusy = false;
