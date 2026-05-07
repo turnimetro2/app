@@ -360,6 +360,20 @@ function saveCambioTurno() {
   if (isBusy) return;
   lock();
 
+  const dateVal = ct_date.value.trim();
+  if (!dateVal) {
+    toast("Inserisci una data");
+    unlock();
+    return;
+  }
+
+  // formato gg-mm-aaaa
+  const d = new Date(dateVal);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  const dateFormatted = `${dd}-${mm}-${yyyy}`;
+
   if (ctUsers.length < 2) {
     toast("Inserisci almeno 2 utenti");
     unlock();
@@ -381,15 +395,18 @@ function saveCambioTurno() {
     }
   }
 
-  let out = "<b>Riepilogo cambio turno:</b><br><br>";
+  let out = `DATA: ${dateFormatted}<br><br>`;
+
   ctUsers.forEach(u => {
-    out += `${u.user} → turno ${u.turno}<br>`;
+    const mat = window.userDetails[u.user]?.matricola || "00000";
+    out += `${u.user} matr ${mat} turno ${u.turno} A${u.turno}<br>`;
   });
+
   ct_output.innerHTML = out;
 
-  // Nessun salvataggio su Google Sheet: solo visualizzazione
   unlock();
 }
+
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
