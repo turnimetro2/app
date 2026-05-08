@@ -154,28 +154,46 @@
   <!-- CAMBIO TURNO (solo visualizzazione locale) -->
   <div id="boxCambioTurno" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
-  <label for="ct_date">Data</label>
-  <input id="ct_date" type="date" style="margin-bottom:15px;">
+
+    <label for="ct_date">Data</label>
+    <input id="ct_date" type="date" style="margin-bottom:15px;">
+
     <div id="ct_container"></div>
 
     <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
-    <button id="ct_save" style="background:#1976d2;margin-top:10px;">Salva</button>
-<button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset</button>
+    <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera</button>
+    <button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset</button>
 
+    <!-- NUOVO RIQUADRO EMAIL DESTINATARI -->
+    <div id="ct_emails" style="
+      margin-top:15px;
+      font-size:14px;
+      color:#333;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      background:#fafafa;
+      white-space:normal;
+      word-break:break-all;
+    "></div>
+
+    <button id="ct_copyEmails" style="background:#009688;margin-top:10px;">Copia destinatari</button>
+
+    <!-- RIQUADRO ESISTENTE RIEPILOGO CAMBIO TURNO -->
     <div id="ct_output" style="
-  margin-top:15px;
-  font-size:14px;
-  color:#333;
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  background:#fafafa;
-  white-space:pre-line;
-"></div>
+      margin-top:15px;
+      font-size:14px;
+      color:#333;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      background:#fafafa;
+      white-space:pre-line;
+    "></div>
 
-   <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia</button>
-
+    <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia</button>
   </div>
+
 
 </div>
 
