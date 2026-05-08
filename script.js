@@ -567,6 +567,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const ct_copyEmails  = document.getElementById("ct_copyEmails");
   const ct_resetBtn    = document.getElementById("ct_reset");
 
+  
+const btnLogout2 = document.getElementById("btnLogout2");
+btnLogout2.addEventListener("click", doLogout);
+  
   btnLogin.addEventListener("click", doLogin);
   btnComplete.addEventListener("click", doComplete);
   btnSave.addEventListener("click", doSaveDashboard);
