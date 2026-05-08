@@ -567,6 +567,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const ct_copyEmails  = document.getElementById("ct_copyEmails");
   const ct_resetBtn    = document.getElementById("ct_reset");
 
+  const ct_backProfile = document.getElementById("ct_backProfile");
+ct_backProfile.addEventListener("click", backToProfile);
+
   
 const btnLogout2 = document.getElementById("btnLogout2");
 btnLogout2.addEventListener("click", doLogout);
