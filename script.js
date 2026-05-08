@@ -487,23 +487,7 @@ function saveCambioTurno() {
     toast("Attenzione: alcuni utenti non hanno email o matricola nel database");
   }
 
-  // --- AVVISO SE LA DATA NON È TRA +7 E +20 GIORNI ---
-{
-  const oggi = new Date();
-  oggi.setHours(0,0,0,0);
-
-  const parts = dateVal.split("-");
-  const dataSelezionata = new Date(parts[0], parts[1] - 1, parts[2]);
-  dataSelezionata.setHours(0,0,0,0);
-
-  const diffGiorni = Math.floor((dataSelezionata - oggi) / (1000 * 60 * 60 * 24));
-
-  if (diffGiorni < 7 || diffGiorni > 20) {
-    toast("Attenzione: la data inserita potrebbe non essere conforme ai requisiti del cambio turno");
-  }
-}
-
-  
+ 
   unlock();
 }
 
