@@ -550,6 +550,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLogin       = document.getElementById("btnLogin");
   const btnComplete    = document.getElementById("btnComplete");
   const btnSave        = document.getElementById("btnSave");
+  const btnLogout = document.getElementById("btnLogout");
   const btnCambioTurno = document.getElementById("btnCambioTurno");
   const ct_addUser     = document.getElementById("ct_addUser");
   const ct_save        = document.getElementById("ct_save");
@@ -560,6 +561,8 @@ document.addEventListener("DOMContentLoaded", () => {
   btnLogin.addEventListener("click", doLogin);
   btnComplete.addEventListener("click", doComplete);
   btnSave.addEventListener("click", doSaveDashboard);
+  btnLogout.addEventListener("click", doLogout);  // <--- AGGIUNTO
+
   btnCambioTurno.addEventListener("click", showCambioTurno);
 
   ct_addUser.addEventListener("click", addCambioTurnoUser);
