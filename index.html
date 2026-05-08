@@ -95,6 +95,59 @@
   .row > div {
     flex: 1;
   }
+
+ #ct_calendarPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+  width: 300px;
+}
+
+#ct_cal_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#ct_cal_header button {
+  width: 40px;
+  padding: 6px;
+}
+
+#ct_cal_grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.ct_day {
+  padding: 8px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #eee;
+}
+
+.ct_day.disabled {
+  background: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.ct_day.consigliato {
+  background: #ffeb99;
+  font-weight: bold;
+  border: 1px solid #e0c200;
+}
+
+ 
 </style>
 </head>
 <body>
