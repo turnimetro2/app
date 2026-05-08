@@ -173,10 +173,15 @@ function doComplete() {
       currentUser.matricola = matVal;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
-      fillDashboard();
-      showDashboard();
-      toast("Dati salvati");
-      unlock();
+loadUserDetails().then(() => {
+  fillDashboard();
+  showDashboard();
+  toast("Dati salvati");
+  unlock();
+});
+
+
+      
     })
     .catch(() => {
       toast("Errore rete (salvataggio)");
