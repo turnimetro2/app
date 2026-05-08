@@ -437,12 +437,7 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
       }
     }
 
-    // controllo duplicati turno
-    if (seenTurni.has(u.turno)) {
-      duplicateTurno = u.turno;
-    } else {
-      seenTurni.add(u.turno);
-    }
+
   }
 
   if (duplicateUser) {
@@ -451,11 +446,7 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
     return;
   }
 
-  if (duplicateTurno) {
-    toast("Turno inserito più di una volta");
-    unlock();
-    return;
-  }
+
 
   // costruzione riepilogo principale
   let out = `${dateFormatted}\n\n`;
