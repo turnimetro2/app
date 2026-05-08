@@ -574,4 +574,93 @@ document.addEventListener("DOMContentLoaded", () => {
   loadUsers();
   loadUserDetails();
   restoreSession();
+
+  // ===== CALENDARIO PERSONALIZZATO =====
+let ctCalDate = new Date();
+
+function openCalendar() {
+  ct_calendarPopup.classList.remove("hidden");
+  renderCalendar();
+}
+
+function closeCalendar() {
+  ct_calendarPopup.classList.add("hidden");
+}
+
+function renderCalendar() {
+  const year = ctCalDate.getFullYear();
+  const month = ctCalDate.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay  = new Date(year, month + 1, 0);
+
+  ct_monthLabel.textContent = firstDay.toLocaleDateString("it-IT", {
+    month: "long",
+    year: "numeric"
+  });
+
+  ct_cal_grid.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  // giorni vuoti prima del 1° del mese
+  for (let i = 0; i < firstDay.getDay(); i++) {
+    const empty = document.createElement("div");
+    ct_cal_grid.appendChild(empty);
+  }
+
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const cell = document.createElement("div");
+    cell.className = "ct_day";
+    cell.textContent = d;
+
+    const date = new Date(year, month, d);
+    date.setHours(0,0,0,0);
+
+    const diff = Math.floor((date - today) / (1000*60*60*24));
+
+    // disabilita giorni passati
+    if (diff < 0) {
+      cell.classList.add("disabled");
+    }
+
+    // evidenzia consigliati (7 → 20)
+    if (diff >= 7 && diff <= 20) {
+      cell.classList.add("consigliato");
+    }
+
+    // click selezione
+    cell.addEventListener("click", () => {
+      if (cell.classList.contains("disabled")) return;
+
+      const yyyy = year;
+      const mm = String(month + 1).padStart(2, "0");
+      const dd = String(d).padStart(2, "0");
+
+      ct_date.value = `${yyyy}-${mm}-${dd}`;
+      closeCalendar();
+    });
+
+    ct_cal_grid.appendChild(cell);
+  }
+}
+
+ct_prevMonth.addEventListener("click", () => {
+  ctCalDate.setMonth(ctCalDate.getMonth() - 1);
+  renderCalendar();
+});
+
+ct_nextMonth.addEventListener("click", () => {
+  ctCalDate.setMonth(ctCalDate.getMonth() + 1);
+  renderCalendar();
+});
+
+// apri calendario quando clicchi sul campo data
+ct_date.addEventListener("click", (e) => {
+  e.preventDefault();
+  openCalendar();
+});
+
+  
 });
