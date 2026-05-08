@@ -87,7 +87,6 @@ function loadUserDetails() {
     });
 }
 
-
 // ===== LOGIN =====
 function doLogin() {
   if (isBusy) return;
@@ -293,7 +292,9 @@ function restoreSession() {
 
 // ===== CAMBIO TURNO (solo lato client) =====
 function showCambioTurno() {
+  boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.remove("hidden");
+
   if (ctUsers.length === 0) {
     ctUsers = [
       { user: currentUser.username, turno: "" },
@@ -380,6 +381,12 @@ function saveCambioTurno() {
     return;
   }
 
+  // validazione utenti e turni + raccolta per controlli duplicati
+  const seenUsers = new Set();
+  const seenTurni = new Set();
+  let duplicateUser = null;
+  let duplicateTurno = null;
+
   for (let i = 0; i < ctUsers.length; i++) {
     const u = ctUsers[i];
 
@@ -393,26 +400,99 @@ function saveCambioTurno() {
       unlock();
       return;
     }
+
+    // controllo duplicati utente (considero solo quelli selezionati)
+    if (i > 0 && u.user) {
+      if (seenUsers.has(u.user)) {
+        duplicateUser = u.user;
+      } else {
+        seenUsers.add(u.user);
+      }
+    }
+
+    // controllo duplicati turno
+    if (seenTurni.has(u.turno)) {
+      duplicateTurno = u.turno;
+    } else {
+      seenTurni.add(u.turno);
+    }
   }
 
+  if (duplicateUser) {
+    toast("Utente selezionato più di una volta");
+    unlock();
+    return;
+  }
+
+  if (duplicateTurno) {
+    toast("Turno inserito più di una volta");
+    unlock();
+    return;
+  }
+
+  // costruzione riepilogo principale
   let out = `${dateFormatted}\n\n`;
 
+  const missingEmailUsers = [];
+  const missingMatUsers   = [];
+
   ctUsers.forEach(u => {
-    const mat = window.userDetails[u.user]?.matricola || "-";
+    const details = window.userDetails?.[u.user] || {};
+    const mat = details.matricola || "-";
+
+    if (!details.email) {
+      missingEmailUsers.push(u.user);
+    }
+    if (!details.matricola) {
+      missingMatUsers.push(u.user);
+    }
 
     out += `${u.user} matr ${mat} turno A${u.turno}\n`;
   });
 
   ct_output.innerText = out;
 
+  // costruzione elenco email destinatari (escludendo l'utente loggato e chi non ha email)
+  const emailParts = [];
+  ctUsers.forEach((u, index) => {
+    if (index === 0) return; // salta utente loggato
+    const details = window.userDetails?.[u.user];
+    if (!details || !details.email) return;
+    if (details.email === currentUser.email) return;
+
+    emailParts.push(`${u.user} <${details.email}>`);
+  });
+
+  const emailText = emailParts.join(" , ");
+  ct_emails.innerText = emailText;
+
+  // notifica se mancano email o matricola per qualcuno
+  if (missingEmailUsers.length > 0 || missingMatUsers.length > 0) {
+    toast("Attenzione: alcuni utenti non hanno email o matricola nel database");
+  }
+
   unlock();
 }
 
-
 function copyCambioTurno() {
   const text = ct_output.innerText;  // prende il riepilogo così com’è
+  if (!text.trim()) {
+    toast("Nessun riepilogo da copiare");
+    return;
+  }
   navigator.clipboard.writeText(text)
     .then(() => toast("Copiato negli appunti"))
+    .catch(() => toast("Errore copia"));
+}
+
+function copyCambioTurnoEmails() {
+  const text = ct_emails.innerText;
+  if (!text.trim()) {
+    toast("Nessun destinatario da copiare");
+    return;
+  }
+  navigator.clipboard.writeText(text)
+    .then(() => toast("Destinatari copiati"))
     .catch(() => toast("Errore copia"));
 }
 
@@ -422,8 +502,9 @@ function resetCambioTurno() {
     { user: "", turno: "" }
   ];
 
-  ct_date.value = "";       // reset data
-  ct_output.innerHTML = ""; // reset riepilogo
+  ct_date.value = "";        // reset data
+  ct_output.innerHTML = "";  // reset riepilogo
+  ct_emails.innerHTML = "";  // reset elenco email
 
   renderCambioTurno();
   toast("Reset effettuato");
@@ -449,6 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.ct_container = document.getElementById("ct_container");
   window.ct_output    = document.getElementById("ct_output");
+  window.ct_emails    = document.getElementById("ct_emails");
 
   const btnLogin       = document.getElementById("btnLogin");
   const btnComplete    = document.getElementById("btnComplete");
@@ -456,18 +538,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCambioTurno = document.getElementById("btnCambioTurno");
   const ct_addUser     = document.getElementById("ct_addUser");
   const ct_save        = document.getElementById("ct_save");
+  const ct_copy        = document.getElementById("ct_copy");
+  const ct_copyEmails  = document.getElementById("ct_copyEmails");
+  const ct_resetBtn    = document.getElementById("ct_reset");
 
   btnLogin.addEventListener("click", doLogin);
   btnComplete.addEventListener("click", doComplete);
   btnSave.addEventListener("click", doSaveDashboard);
   btnCambioTurno.addEventListener("click", showCambioTurno);
+
   ct_addUser.addEventListener("click", addCambioTurnoUser);
   ct_save.addEventListener("click", saveCambioTurno);
-document.getElementById("ct_copy").addEventListener("click", copyCambioTurno);
-document.getElementById("ct_reset").addEventListener("click", resetCambioTurno);
+  ct_copy.addEventListener("click", copyCambioTurno);
+  ct_copyEmails.addEventListener("click", copyCambioTurnoEmails);
+  ct_resetBtn.addEventListener("click", resetCambioTurno);
 
   loadUsers();
   loadUserDetails();
-
   restoreSession();
 });
