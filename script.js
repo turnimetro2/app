@@ -7,6 +7,12 @@ let isBusy = false;
 let allUsers = [];
 let ctUsers = []; // cambio turno solo in memoria
 
+function backToProfile() {
+  boxCambioTurno.classList.add("hidden");
+  boxDashboard.classList.remove("hidden");
+}
+
+
 // ===== TOAST =====
 function toast(msg) {
   const t = document.getElementById("toast");
