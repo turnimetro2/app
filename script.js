@@ -247,6 +247,21 @@ function doSaveDashboard() {
     });
 }
 
+function doLogout() {
+  localStorage.removeItem("sessionUser");
+  currentUser = null;
+
+  // pulizia eventuali dati cambio turno
+  ctUsers = [];
+  ct_output.innerHTML = "";
+  ct_emails.innerHTML = "";
+  ct_date.value = "";
+
+  showLogin();
+  toast("Logout effettuato");
+}
+
+
 // ===== RIPRISTINA SESSIONE =====
 function restoreSession() {
   const saved = localStorage.getItem("sessionUser");
