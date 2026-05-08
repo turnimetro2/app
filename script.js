@@ -419,11 +419,14 @@ function saveCambioTurno() {
       unlock();
       return;
     }
-    if (!/^\d{2,3}$/.test(u.turno)) {
-      toast("Turno non valido (2-3 cifre)");
-      unlock();
-      return;
-    }
+
+    
+if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
+  toast("Turno non valido (2-3 caratteri alfanumerici)");
+  unlock();
+  return;
+}
+
 
     // controllo duplicati utente (considero solo quelli selezionati)
     if (i > 0 && u.user) {
