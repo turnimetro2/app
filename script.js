@@ -243,8 +243,11 @@ function doSaveDashboard() {
       currentUser.matricola = matVal;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
-      toast("Dati aggiornati");
-      unlock();
+loadUserDetails().then(() => {
+  toast("Dati aggiornati");
+  unlock();
+});
+
     })
     .catch(() => {
       toast("Errore rete (salvataggio)");
