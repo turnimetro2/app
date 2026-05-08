@@ -350,7 +350,7 @@ function renderCambioTurno() {
 
 function addCambioTurnoUser() {
   if (ctUsers.length >= 15) {
-    toast("Max 10 utenti");
+    toast("Max 15 utenti");
     return;
   }
   ctUsers.push({ user: "", turno: "" });
