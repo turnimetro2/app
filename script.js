@@ -383,6 +383,20 @@ function saveCambioTurno() {
     return;
   }
 
+  // --- AVVISO SE LA DATA NON È TRA +7 E +20 GIORNI ---
+const oggi = new Date();
+oggi.setHours(0,0,0,0);
+
+const dataSelezionata = new Date(dateVal);
+dataSelezionata.setHours(0,0,0,0);
+
+const diffGiorni = Math.floor((dataSelezionata - oggi) / (1000 * 60 * 60 * 24));
+
+if (diffGiorni < 7 || diffGiorni > 20) {
+  toast("La data inserita potrebbe non avere i requisiti per il cambio turno");
+}
+
+
   // formato gg-mm-aaaa
   const d = new Date(dateVal);
   const dd = String(d.getDate()).padStart(2, "0");
