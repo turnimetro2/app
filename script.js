@@ -210,6 +210,10 @@ function fillDashboard() {
   d_pin.value  = currentUser.pin;
   d_email.value = currentUser.email || "";
   d_mat.value   = currentUser.matricola || "";
+
+  btnSave.disabled = true;
+
+  
 }
 
 // ===== SALVA DA DASHBOARD =====
