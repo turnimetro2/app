@@ -9,19 +9,7 @@ let ctUsers = []; // cambio turno solo in memoria
 
 function backToProfile() {
   boxCambioTurno.classList.add("hidden");
-  boxCambioTurnoActions.classList.add("hidden");
   boxDashboard.classList.remove("hidden");
-  boxDashboardActions.classList.remove("hidden");
-}
-
-
-function checkDashboardChanges() {
-  const changed =
-    d_pin.value.trim() !== currentUser.pin ||
-    d_email.value.trim() !== currentUser.email ||
-    d_mat.value.trim() !== currentUser.matricola;
-
-  btnSave.disabled = !changed;
 }
 
 
@@ -56,29 +44,22 @@ function showLogin() {
   boxLogin.classList.remove("hidden");
   boxComplete.classList.add("hidden");
   boxDashboard.classList.add("hidden");
-  boxDashboardActions.classList.add("hidden");
   boxCambioTurno.classList.add("hidden");
-  boxCambioTurnoActions.classList.add("hidden");
 }
 
 function showComplete() {
   boxLogin.classList.add("hidden");
   boxComplete.classList.remove("hidden");
   boxDashboard.classList.add("hidden");
-  boxDashboardActions.classList.add("hidden");
   boxCambioTurno.classList.add("hidden");
-  boxCambioTurnoActions.classList.add("hidden");
 }
 
 function showDashboard() {
   boxLogin.classList.add("hidden");
   boxComplete.classList.add("hidden");
   boxDashboard.classList.remove("hidden");
-  boxDashboardActions.classList.remove("hidden");
   boxCambioTurno.classList.add("hidden");
-  boxCambioTurnoActions.classList.add("hidden");
 }
-
 
 // ===== CARICA UTENTI =====
 function loadUsers() {
@@ -220,10 +201,6 @@ function fillDashboard() {
   d_pin.value  = currentUser.pin;
   d_email.value = currentUser.email || "";
   d_mat.value   = currentUser.matricola || "";
-
-  btnSave.disabled = true;
-
-  
 }
 
 // ===== SALVA DA DASHBOARD =====
@@ -345,10 +322,7 @@ function restoreSession() {
 // ===== CAMBIO TURNO (solo lato client) =====
 function showCambioTurno() {
   boxDashboard.classList.add("hidden");
-  boxDashboardActions.classList.add("hidden");
   boxCambioTurno.classList.remove("hidden");
-  boxCambioTurnoActions.classList.remove("hidden");
-
 
   if (ctUsers.length === 0) {
     ctUsers = [
@@ -562,17 +536,6 @@ function resetCambioTurno() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
-
-  d_pin.addEventListener("input", checkDashboardChanges);
-d_email.addEventListener("input", checkDashboardChanges);
-d_mat.addEventListener("input", checkDashboardChanges);
-
-  window.boxDashboardActions   = document.getElementById("boxDashboardActions");
-window.boxCambioTurnoActions = document.getElementById("boxCambioTurnoActions");
-
-  const ct_logout = document.getElementById("ct_logout");
-ct_logout.addEventListener("click", doLogout);
-
   // cache elementi
   window.boxLogin       = document.getElementById("boxLogin");
   window.boxComplete    = document.getElementById("boxComplete");
