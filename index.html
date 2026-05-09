@@ -95,14 +95,6 @@
   .row > div {
     flex: 1;
   }
-
- #boxCambioTurno {
-  width: 100%;
-  max-width: 420px;   /* stessa larghezza della container */
-  margin: 0 auto;     /* centrato come boxDashboard */
-}
-
- 
 </style>
 </head>
 <body>
@@ -159,14 +151,9 @@
     <label for="d_mat">Matricola (5 cifre)</label>
     <input id="d_mat" type="text" inputmode="numeric" maxlength="5">
 
-<button id="btnSave">Salva</button>
-</div> <!-- chiusura boxDashboard -->
-
-<div id="boxDashboardActions" class="card">
-  <button id="btnCambioTurno" style="background:#455a64;">Cambio turno</button>
-  <button id="btnLogout" style="margin-top:10px;background:#c62828;">Logout</button>
-</div>
-
+    <button id="btnSave">Salva</button>
+   <button id="btnLogout" style="margin-top:10px;background:#c62828;">Logout</button>
+   <button id="btnCambioTurno" style="margin-top:10px;background:#455a64;">Cambio turno</button>
 
   </div>
 
@@ -213,14 +200,7 @@
 
     <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia corpo mail</button>
 
-   </div> <!-- chiusura boxCambioTurno -->
-
-<div id="boxCambioTurnoActions" class="card">
-  <button id="ct_backProfile" style="background:#455a64;">Profilo utente</button>
- <button id="ct_logout" style="margin-top:10px;background:#c62828;">Logout</button>
-
-</div>
-
+   <button id="ct_backProfile" style="background:#455a64;margin-top:10px;">Profilo utente</button>
 
   </div>
 
