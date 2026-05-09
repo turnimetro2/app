@@ -12,6 +12,15 @@ function backToProfile() {
   boxDashboard.classList.remove("hidden");
 }
 
+function checkDashboardChanges() {
+  const changed =
+    d_pin.value.trim() !== currentUser.pin ||
+    d_email.value.trim() !== currentUser.email ||
+    d_mat.value.trim() !== currentUser.matricola;
+
+  btnSave.disabled = !changed;
+}
+
 
 // ===== TOAST =====
 function toast(msg) {
@@ -536,6 +545,12 @@ function resetCambioTurno() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
+
+  d_pin.addEventListener("input", checkDashboardChanges);
+d_email.addEventListener("input", checkDashboardChanges);
+d_mat.addEventListener("input", checkDashboardChanges);
+
+  
   // cache elementi
   window.boxLogin       = document.getElementById("boxLogin");
   window.boxComplete    = document.getElementById("boxComplete");
