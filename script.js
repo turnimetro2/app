@@ -554,7 +554,9 @@ document.addEventListener("DOMContentLoaded", () => {
 d_email.addEventListener("input", checkDashboardChanges);
 d_mat.addEventListener("input", checkDashboardChanges);
 
-  
+  const ct_logout = document.getElementById("ct_logout");
+ct_logout.addEventListener("click", doLogout);
+
   // cache elementi
   window.boxLogin       = document.getElementById("boxLogin");
   window.boxComplete    = document.getElementById("boxComplete");
