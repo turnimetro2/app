@@ -12,6 +12,15 @@ function backToProfile() {
   boxDashboard.classList.remove("hidden");
 }
 
+function checkDashboardChanges() {
+  const changed =
+    d_pin.value.trim() !== currentUser.pin ||
+    d_email.value.trim() !== currentUser.email ||
+    d_mat.value.trim() !== currentUser.matricola;
+
+  btnSave.disabled = !changed;
+}
+
 
 // ===== TOAST =====
 function toast(msg) {
@@ -201,6 +210,8 @@ function fillDashboard() {
   d_pin.value  = currentUser.pin;
   d_email.value = currentUser.email || "";
   d_mat.value   = currentUser.matricola || "";
+  btnSave.disabled = true;
+
 }
 
 // ===== SALVA DA DASHBOARD =====
@@ -501,7 +512,7 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
 function copyCambioTurno() {
   const text = ct_output.innerText;  // prende il riepilogo così com’è
   if (!text.trim()) {
-    toast("Nessun riepilogo da copiare");
+    toast("Nessun testo da copiare");
     return;
   }
   navigator.clipboard.writeText(text)
@@ -512,11 +523,11 @@ function copyCambioTurno() {
 function copyCambioTurnoEmails() {
   const text = ct_emails.innerText;
   if (!text.trim()) {
-    toast("Nessun destinatario da copiare");
+    toast("Nessun testo da copiare");
     return;
   }
   navigator.clipboard.writeText(text)
-    .then(() => toast("Destinatari copiati"))
+    .then(() => toast("Copiato negli appunti"))
     .catch(() => toast("Errore copia"));
 }
 
@@ -536,6 +547,12 @@ function resetCambioTurno() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
+
+  d_pin.addEventListener("input", checkDashboardChanges);
+d_email.addEventListener("input", checkDashboardChanges);
+d_mat.addEventListener("input", checkDashboardChanges);
+
+  
   // cache elementi
   window.boxLogin       = document.getElementById("boxLogin");
   window.boxComplete    = document.getElementById("boxComplete");
