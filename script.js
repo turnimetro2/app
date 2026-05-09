@@ -261,9 +261,11 @@ function doSaveDashboard() {
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
 loadUserDetails().then(() => {
+  fillDashboard();          // <-- reset campi + disabilita Salva
   toast("Dati aggiornati");
   unlock();
 });
+
 
     })
     .catch(() => {
