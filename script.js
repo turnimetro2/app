@@ -521,7 +521,7 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
 
   // notifica se mancano email o matricola per qualcuno
   if (missingEmailUsers.length > 0 || missingMatUsers.length > 0) {
-    toast("Attenzione: uno o piu' colleghi selezionati non hanno ancora registrato email o matricola");
+    toast("Attenzione!\n uno o piu' colleghi selezionati non hanno ancora registrato email o matricola");
   }
   
   unlock();
