@@ -536,6 +536,11 @@ function resetCambioTurno() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
+
+  const ct_sendMail = document.getElementById("ct_sendMail");
+ct_sendMail.addEventListener("click", sendCambioTurnoEmail);
+
+  
   // cache elementi
   window.boxLogin       = document.getElementById("boxLogin");
   window.boxComplete    = document.getElementById("boxComplete");
