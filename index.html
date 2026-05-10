@@ -115,7 +115,17 @@
     </select>
 
     <label for="pin">PIN (6 cifre)</label>
-    <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN (6 cifre)">
+
+
+   <div style="position:relative;">
+  <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN (6 cifre)">
+  <span id="togglePinLogin" style="
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    cursor:pointer; font-size:18px; color:#666;
+  ">👁️</span>
+</div>
+
+   
 
     <button id="btnLogin">Login</button>
   </div>
