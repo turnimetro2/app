@@ -320,6 +320,35 @@ function restoreSession() {
 }
 
 // ===== CAMBIO TURNO (solo lato client) =====
+
+
+function sendCambioTurnoEmail() {
+  const body = ct_output.innerText.trim();
+  const cc   = ct_emails.innerText.trim();
+
+  if (!body) {
+    toast("Genera prima il riepilogo");
+    return;
+  }
+
+  // Oggetto fisso
+  const subject = "CAMBIO TURNO";
+
+  // Costruzione mailto
+  let mailto = "mailto:?";
+
+  mailto += "subject=" + encodeURIComponent(subject);
+  mailto += "&body=" + encodeURIComponent(body);
+
+  if (cc) {
+    mailto += "&cc=" + encodeURIComponent(cc);
+  }
+
+  // Apertura app email di default
+  window.location.href = mailto;
+}
+
+
 function showCambioTurno() {
   boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.remove("hidden");
