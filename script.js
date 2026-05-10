@@ -12,6 +12,16 @@ function backToProfile() {
   boxDashboard.classList.remove("hidden");
 }
 
+function togglePasswordVisibility(input, icon) {
+  if (input.type === "password") {
+    input.type = "text";
+    icon.textContent = "🙈";
+  } else {
+    input.type = "password";
+    icon.textContent = "👁️";
+  }
+}
+
 
 // ===== TOAST =====
 function toast(msg) {
@@ -566,6 +576,15 @@ function resetCambioTurno() {
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
 
+  document.getElementById("togglePinLogin").addEventListener("click", () => {
+  togglePasswordVisibility(pin, togglePinLogin);
+});
+
+document.getElementById("togglePinProfile").addEventListener("click", () => {
+  togglePasswordVisibility(d_pin, togglePinProfile);
+});
+
+  
   const ct_sendMail = document.getElementById("ct_sendMail");
 ct_sendMail.addEventListener("click", sendCambioTurnoEmail);
 
