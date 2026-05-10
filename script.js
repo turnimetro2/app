@@ -22,18 +22,6 @@ function togglePasswordVisibility(input, icon) {
   }
 }
 
-function installApp() {
-  if (navigator.share) {
-    navigator.share({
-      title: "Cambi Turno",
-      text: "Aggiungi questa webapp alla schermata Home",
-      url: window.location.href
-    }).catch(() => {});
-  } else {
-    toast("Usa il menu del browser per aggiungere alla schermata Home");
-  }
-}
-
 
 // ===== TOAST =====
 function toast(msg) {
@@ -587,11 +575,6 @@ function resetCambioTurno() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
-
-  document.querySelectorAll(".installIcon").forEach(icon => {
-  icon.addEventListener("click", installApp);
-});
-
   
   document.getElementById("togglePinLogin").addEventListener("click", () => {
   togglePasswordVisibility(pin, togglePinLogin);
