@@ -15,12 +15,13 @@ function backToProfile() {
 function togglePasswordVisibility(input, icon) {
   if (input.type === "password") {
     input.type = "text";
-    icon.textContent = "🙈";
+    icon.style.opacity = "0.9";
   } else {
     input.type = "password";
-    icon.textContent = "👁️";
+    icon.style.opacity = "0.55";
   }
 }
+
 
 
 // ===== TOAST =====
