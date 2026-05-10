@@ -31,6 +31,23 @@
     margin-bottom: 16px;
   }
 
+.pinToggle {
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:20px;
+  height:20px;
+  fill:#666;
+  opacity:0.55;
+  cursor:pointer;
+  transition:opacity 0.2s ease;
+}
+
+.pinToggle:hover {
+  opacity:0.9;
+}
+
  
   label {
     display: block;
@@ -120,10 +137,10 @@
 
    <div style="position:relative;">
   <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN (6 cifre)">
-  <span id="togglePinLogin" style="
-    position:absolute; right:12px; top:50%; transform:translateY(-50%);
-    cursor:pointer; font-size:18px; color:#666;
-  ">👁️</span>
+<svg id="togglePinLogin" class="pinToggle" viewBox="0 0 24 24">
+  <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
+</svg>
+
 </div>
 
    
@@ -162,10 +179,10 @@
    
     <div style="position:relative;">
   <input id="d_pin" type="password" inputmode="numeric" maxlength="6">
-  <span id="togglePinProfile" style="
-    position:absolute; right:12px; top:50%; transform:translateY(-50%);
-    cursor:pointer; font-size:18px; color:#666;
-  ">👁️</span>
+<svg id="togglePinProfile" class="pinToggle" viewBox="0 0 24 24">
+  <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
+</svg>
+
 </div>
 
 
