@@ -157,7 +157,16 @@
     <input id="d_user" type="text" disabled>
 
     <label for="d_pin">PIN (6 cifre)</label>
-    <input id="d_pin" type="password" inputmode="numeric" maxlength="6">
+
+   
+    <div style="position:relative;">
+  <input id="d_pin" type="password" inputmode="numeric" maxlength="6">
+  <span id="togglePinProfile" style="
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    cursor:pointer; font-size:18px; color:#666;
+  ">👁️</span>
+</div>
+
 
     <label for="d_email">Email</label>
     <input id="d_email" type="email">
