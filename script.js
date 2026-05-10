@@ -588,6 +588,11 @@ function resetCambioTurno() {
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
 
+  document.querySelectorAll(".installIcon").forEach(icon => {
+  icon.addEventListener("click", installApp);
+});
+
+  
   document.getElementById("togglePinLogin").addEventListener("click", () => {
   togglePasswordVisibility(pin, togglePinLogin);
 });
