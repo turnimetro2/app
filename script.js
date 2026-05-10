@@ -12,13 +12,18 @@ function backToProfile() {
   boxDashboard.classList.remove("hidden");
 }
 
-function togglePasswordVisibility(input, icon) {
+function togglePasswordVisibility(input, icon, pathElement) {
+  const eyeOpen = "M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z";
+  const eyeClosed = "M1 1l22 22M12 5c-7 0-11 7-11 7 1.5 2.6 4.5 5.5 8 6m6 0c3.5-0.5 6.5-3.4 8-6 0 0-4-7-11-7-1.5 0-2.9 0.3-4.2 0.8";
+
   if (input.type === "password") {
     input.type = "text";
     icon.style.opacity = "0.9";
+    pathElement.setAttribute("d", eyeClosed);
   } else {
     input.type = "password";
     icon.style.opacity = "0.55";
+    pathElement.setAttribute("d", eyeOpen);
   }
 }
 
@@ -577,12 +582,12 @@ function resetCambioTurno() {
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
   
-  document.getElementById("togglePinLogin").addEventListener("click", () => {
-  togglePasswordVisibility(pin, togglePinLogin);
+document.getElementById("togglePinLogin").addEventListener("click", () => {
+  togglePasswordVisibility(pin, togglePinLogin, togglePinLoginPath);
 });
 
 document.getElementById("togglePinProfile").addEventListener("click", () => {
-  togglePasswordVisibility(d_pin, togglePinProfile);
+  togglePasswordVisibility(d_pin, togglePinProfile, togglePinProfilePath);
 });
 
   
