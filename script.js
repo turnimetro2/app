@@ -514,7 +514,7 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
   }
 
   if (duplicateUser) {
-    toast("Utente selezionato più di una volta");
+    toast("Collega selezionato più di una volta");
     unlock();
     return;
   }
