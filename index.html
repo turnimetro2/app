@@ -9,15 +9,25 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
- /* Campo turno più stretto */
+ /* Campo username disabilitato (prima riga) */
+#ct_container input[disabled] {
+  width: 100%;
+}
+ 
+/* Campo turno */
 .ct_turno {
-  max-width: 70px !important;
+  width: 80px !important;   /* mostra bene 3 caratteri */
   text-align: center;
+  font-size: 16px;
+  padding: 10px;
 }
 
-/* Select collega più largo */
+/* Select collega */
 .ct_user {
-  min-width: 200px !important;
+  width: 100%;
+  min-width: 180px;
+  padding: 10px;
+  font-size: 16px;
 }
 
 /* Pulsante elimina riga */
