@@ -546,7 +546,7 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
 function copyCambioTurno() {
   const text = ct_output.innerText;  // prende il riepilogo così com’è
   if (!text.trim()) {
-    toast("Nessun riepilogo da copiare");
+    toast("Nessun corpo mail da copiare");
     return;
   }
   navigator.clipboard.writeText(text)
