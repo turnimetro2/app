@@ -9,13 +9,6 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
-#ct_container input[disabled] {
-  width: 100%;
-  padding: 10px;        /* stessa altezza delle select */
-  font-size: 16px;      /* stesso font delle select */
-  height: 48px;         /* identica altezza dei campi sottostanti */
-}
-
  
 /* Campo turno */
 .ct_turno {
@@ -33,6 +26,15 @@
   font-size: 16px;
 }
 
+  /* Primo campo username (disabilitato) con stessa altezza delle select */
+#ct_container input[disabled] {
+  height: 48px !important;
+  padding: 10px !important;
+  font-size: 16px !important;
+  line-height: 26px !important;
+}
+
+  
 /* Pulsante elimina riga */
 .ct_remove {
   width: 26px;
