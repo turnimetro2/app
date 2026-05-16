@@ -466,14 +466,14 @@ function saveCambioTurno() {
     const u = ctUsers[i];
 
     if (i > 0 && !u.user) {
-      toast("Seleziona tutti gli utenti");
+      toast("Seleziona tutti i colleghi");
       unlock();
       return;
     }
 
     
 if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
-  toast("Turno non valido (2-3 caratteri alfanumerici)");
+  toast("Turno non valido (2-3 caratteri)");
   unlock();
   return;
 }
