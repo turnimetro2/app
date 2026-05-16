@@ -399,11 +399,23 @@ function renderCambioTurno() {
 
     const colTurno = document.createElement("div");
     colTurno.innerHTML = `
-      <input type="text" class="ct_turno" data-index="${index}" placeholder="Turno" value="${u.turno || ""}">
+     <input type="text" class="ct_turno" maxlength="3" data-index="${index}" placeholder="Turno" value="${u.turno || ""}">
+
     `;
 
     row.appendChild(colUser);
     row.appendChild(colTurno);
+
+// Pulsante elimina (solo per index >= 2)
+let colRemove = document.createElement("div");
+if (index >= 2) {
+  colRemove.innerHTML = `
+    <button class="ct_remove" data-index="${index}">X</button>
+  `;
+}
+row.appendChild(colRemove);
+
+    
     container.appendChild(row);
   });
 
@@ -420,6 +432,16 @@ function renderCambioTurno() {
       ctUsers[i].turno = e.target.value.trim();
     });
   });
+
+  document.querySelectorAll(".ct_remove").forEach(btn => {
+  btn.addEventListener("click", e => {
+    const i = Number(e.target.dataset.index);
+    ctUsers.splice(i, 1);
+    renderCambioTurno();
+  });
+});
+
+  
 }
 
 function addCambioTurnoUser() {
