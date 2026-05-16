@@ -572,7 +572,7 @@ function copyCambioTurno() {
     return;
   }
   navigator.clipboard.writeText(text)
-    .then(() => toast("Copiato negli appunti"))
+    .then(() => toast("Corpo mail copiato"))
     .catch(() => toast("Errore copia"));
 }
 
