@@ -32,8 +32,23 @@
   width: 100%;
 }
 
-.row > div {
-  flex: 1;
+/* Colonna 1: Seleziona collega */
+.row > div:nth-child(1) {
+  flex: 3;   /* più larga */
+}
+
+/* Colonna 2: Turno */
+.row > div:nth-child(2) {
+  flex: 1;   /* stessa larghezza attuale */
+}
+
+/* Colonna 3: pulsante X */
+.row > div:nth-child(3) {
+  flex: 0;               /* non si espande */
+  width: 40px;           /* spazio fisso */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
