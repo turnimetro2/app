@@ -7,6 +7,14 @@ let isBusy = false;
 let allUsers = [];
 let ctUsers = []; // cambio turno solo in memoria
 
+function createFakeDeleteButton() {
+    const fake = document.createElement("div");
+    fake.className = "ct_fake_remove";
+    fake.textContent = "•";   // simbolo discreto
+    return fake;
+}
+
+
 function backToProfile() {
   boxCambioTurno.classList.add("hidden");
   boxDashboard.classList.remove("hidden");
