@@ -51,12 +51,18 @@
   align-items: center;
 }
 
+#ct_container .row:first-child,
+#ct_container .row:nth-child(2) {
+  position: relative;
+}
+
 #ct_container .row:first-child::after,
 #ct_container .row:nth-child(2)::after {
   content: "";
-  flex: 0 0 40px;
-  display: flex;
-  height: 1px;
+  position: absolute;
+  right: 0;
+  width: 40px;   /* stessa larghezza del pulsante X */
+  height: 100%;
 }
 
 
