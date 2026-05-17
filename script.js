@@ -414,14 +414,22 @@ function renderCambioTurno() {
     row.appendChild(colUser);
     row.appendChild(colTurno);
 
-// Pulsante elimina (solo per index >= 2)
+// Terza colonna: X oppure finto pulsante
 let colRemove = document.createElement("div");
+
 if (index >= 2) {
+  // Righe eliminabili
   colRemove.innerHTML = `
     <button class="ct_remove" data-index="${index}">X</button>
   `;
+} else {
+  // Prime due righe: oggetto estetico
+  const fake = createFakeDeleteButton();
+  colRemove.appendChild(fake);
 }
+
 row.appendChild(colRemove);
+
 
     
     container.appendChild(row);
