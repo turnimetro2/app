@@ -9,14 +9,45 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
- 
+
+ .ct_date_row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ct_date_row label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.ct_date_row input[type="date"] {
+  flex: 1;
+  margin: 0;
+}
+
+ .row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.row > div {
+  flex: 1;
+}
+
+ #ct_container input[disabled] {
+  width: 100% !important;
+}
+
 /* Campo turno */
 .ct_turno {
-  width: 80px !important;   /* mostra bene 3 caratteri */
+  width: 100% !important;   /* ← sostituisce il vecchio 80px */
   text-align: center;
   font-size: 16px;
   padding: 10px;
 }
+
 
 /* Select collega */
 .ct_user {
@@ -254,8 +285,11 @@
   <div id="boxCambioTurno" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
 
-    <label for="ct_date">Data</label>
-    <input id="ct_date" type="date" style="margin-bottom:15px;">
+<div class="ct_date_row" style="margin-bottom:15px;">
+  <label for="ct_date">Data</label>
+  <input id="ct_date" type="date">
+</div>
+
 
     <div id="ct_container"></div>
 
