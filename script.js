@@ -8,10 +8,10 @@ let allUsers = [];
 let ctUsers = []; // cambio turno solo in memoria
 
 function createFakeDeleteButton() {
-    const fake = document.createElement("div");
-    fake.className = "ct_fake_remove";
-    fake.textContent = "•";   // simbolo discreto
-    return fake;
+  const fake = document.createElement("div");
+  fake.className = "ct_fake_remove";
+  fake.textContent = "•";  // simbolo discreto
+  return fake;
 }
 
 
