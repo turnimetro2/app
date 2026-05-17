@@ -51,6 +51,13 @@
   align-items: center;
 }
 
+/* Aggiunge uno spazio vuoto nelle prime due righe (senza pulsante X) */
+#ct_container .row:first-child::after,
+#ct_container .row:nth-child(2)::after {
+  content: "";
+  width: 40px;          /* stessa larghezza del pulsante X */
+  display: block;
+}
 
 
 /* Campo turno */
