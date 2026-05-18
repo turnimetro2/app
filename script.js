@@ -106,13 +106,17 @@ function loadUsers() {
 }
 
 function loadUserDetails() {
-  return apiCall({ action: "getUsersFull" })
-    .then(res => {
-      if (res.success) {
-        window.userDetails = res.data; // { username: { matricola: "01234", email: "..."} }
-      }
-    });
+  return apiCall({
+    action: "getUsersFull",
+    username: currentUser?.username || ""
+  })
+  .then(res => {
+    if (res.success) {
+      window.userDetails = res.data; // { username: { matricola: "01234", email: "..."} }
+    }
+  });
 }
+
 
 // ===== LOGIN =====
 function doLogin() {
