@@ -693,6 +693,6 @@ btnLogout2.addEventListener("click", doLogout);
   ct_resetBtn.addEventListener("click", resetCambioTurno);
 
   loadUsers();
-  loadUserDetails();
+
   restoreSession();
 });
