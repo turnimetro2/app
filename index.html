@@ -26,11 +26,7 @@
   font-size: 16px;
 }
 
- /* Raddoppia larghezza del campo username nella prima riga */
-#ct_container .row:first-child input[disabled] {
-  flex: 2 !important;   /* raddoppia lo spazio */
-  width: 100% !important;
-}
+
 
   /* Primo campo username (disabilitato) con stessa altezza delle select */
 #ct_container input[disabled] {
@@ -40,8 +36,14 @@
   line-height: 26px !important;
 }
 
+ /* Raddoppia la larghezza della colonna username nella prima riga */
+#ct_container .row:first-child > div:first-child {
+  flex: 2 !important;
+}
+
+/* Mantiene la colonna turno della prima riga alla larghezza normale */
 #ct_container .row:first-child > div:nth-child(2) {
-  flex: 1;
+  flex: 1 !important;
 }
 
  
