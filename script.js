@@ -655,7 +655,7 @@ ct_date.addEventListener("change", () => {
 
   // Solo notifica, NON blocca l'uso
   if (selected < min || selected > max) {
-    toast("Attenzione: la data selezionata è fuori dal range 7–20 giorni");
+    toast("Attenzione!\n la data selezionata è fuori dal range 7–20 giorni da oggi");
   }
 });
   
