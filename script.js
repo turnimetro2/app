@@ -228,7 +228,19 @@ function fillDashboard() {
   d_pin.value  = currentUser.pin;
   d_email.value = currentUser.email || "";
   d_mat.value   = currentUser.matricola || "";
+
+  btnSave.disabled = true;   // 🔥 blocca il pulsante finché non ci sono modifiche
 }
+
+function checkDashboardChanges() {
+  const changed =
+    d_pin.value.trim() !== currentUser.pin ||
+    d_email.value.trim() !== currentUser.email ||
+    d_mat.value.trim() !== currentUser.matricola;
+
+  btnSave.disabled = !changed;
+}
+
 
 // ===== SALVA DA DASHBOARD =====
 function doSaveDashboard() {
@@ -288,6 +300,8 @@ loadUserDetails().then(() => {
   showDashboard();
   toast("Dati aggiornati");
   unlock();
+  checkDashboardChanges();   // 🔥 evita che il pulsante resti attivo dopo il salvataggio
+
 });
 
     })
@@ -664,6 +678,12 @@ ct_sendMail.addEventListener("click", sendCambioTurnoEmail);
   const btnLogin       = document.getElementById("btnLogin");
   const btnComplete    = document.getElementById("btnComplete");
   const btnSave        = document.getElementById("btnSave");
+
+  d_pin.addEventListener("input", checkDashboardChanges);
+d_email.addEventListener("input", checkDashboardChanges);
+d_mat.addEventListener("input", checkDashboardChanges);
+
+  
   const btnLogout = document.getElementById("btnLogout");
   const btnCambioTurno = document.getElementById("btnCambioTurno");
   const ct_addUser     = document.getElementById("ct_addUser");
