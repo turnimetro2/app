@@ -139,16 +139,19 @@ function doLogin() {
       currentUser = res.user;
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
-      if (!currentUser.email || !currentUser.matricola) {
-        email.value     = currentUser.email || "";
-        matricola.value = currentUser.matricola || "";
-        showComplete();
-      } else {
-        fillDashboard();
-        showDashboard();
-      }
+      // 🔥 Carica TUTTI i dettagli utenti UNA SOLA VOLTA
+      return loadUserDetails().then(() => {
+        if (!currentUser.email || !currentUser.matricola) {
+          email.value     = currentUser.email || "";
+          matricola.value = currentUser.matricola || "";
+          showComplete();
+        } else {
+          fillDashboard();
+          showDashboard();
+        }
 
-      unlock();
+        unlock();
+      });
     })
     .catch(() => {
       toast("Errore rete (login)");
@@ -196,11 +199,19 @@ function doComplete() {
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
 loadUserDetails().then(() => {
+  // aggiorna anche i dettagli in memoria
+  window.userDetails[currentUser.username] = {
+    pin: currentUser.pin,
+    email: currentUser.email,
+    matricola: currentUser.matricola
+  };
+
   fillDashboard();
   showDashboard();
   toast("Dati salvati");
   unlock();
 });
+
 
 
       
@@ -266,6 +277,15 @@ function doSaveDashboard() {
       localStorage.setItem("sessionUser", JSON.stringify(currentUser));
 
 loadUserDetails().then(() => {
+  // aggiorna anche i dettagli in memoria
+  window.userDetails[currentUser.username] = {
+    pin: currentUser.pin,
+    email: currentUser.email,
+    matricola: currentUser.matricola
+  };
+
+  fillDashboard();
+  showDashboard();
   toast("Dati aggiornati");
   unlock();
 });
@@ -317,14 +337,17 @@ function restoreSession() {
 
         currentUser = res.user;
 
-        if (!currentUser.email || !currentUser.matricola) {
-          email.value     = currentUser.email || "";
-          matricola.value = currentUser.matricola || "";
-          showComplete();
-        } else {
-          fillDashboard();
-          showDashboard();
-        }
+        // 🔥 Carica TUTTI i dettagli utenti UNA SOLA VOLTA
+        return loadUserDetails().then(() => {
+          if (!currentUser.email || !currentUser.matricola) {
+            email.value     = currentUser.email || "";
+            matricola.value = currentUser.matricola || "";
+            showComplete();
+          } else {
+            fillDashboard();
+            showDashboard();
+          }
+        });
       })
       .catch(() => {
         showLogin();
@@ -334,6 +357,7 @@ function restoreSession() {
     showLogin();
   }
 }
+
 
 // ===== CAMBIO TURNO (solo lato client) =====
 
