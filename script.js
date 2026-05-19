@@ -641,6 +641,24 @@ function resetCambioTurno() {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
+
+ct_date.addEventListener("change", () => {
+  const today = new Date();
+  const selected = new Date(ct_date.value);
+
+  // Calcola intervallo valido
+  const min = new Date();
+  min.setDate(today.getDate() + 7);
+
+  const max = new Date();
+  max.setDate(today.getDate() + 20);
+
+  // Solo notifica, NON blocca l'uso
+  if (selected < min || selected > max) {
+    toast("Attenzione: la data selezionata è fuori dal range 7–20 giorni");
+  }
+});
+  
   
 document.getElementById("togglePinLogin").addEventListener("click", () => {
   togglePasswordVisibility(pin, togglePinLogin, togglePinLoginPath);
