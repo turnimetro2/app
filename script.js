@@ -648,10 +648,10 @@ ct_date.addEventListener("change", () => {
 
   // Calcola intervallo valido
   const min = new Date();
-  min.setDate(today.getDate() + 7);
+  min.setDate(today.getDate() + 6);
 
   const max = new Date();
-  max.setDate(today.getDate() + 20);
+  max.setDate(today.getDate() + 21);
 
   // Solo notifica, NON blocca l'uso
   if (selected < min || selected > max) {
