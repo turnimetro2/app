@@ -26,6 +26,12 @@
   font-size: 16px;
 }
 
+ /* Raddoppia larghezza del campo username nella prima riga */
+#ct_container .row:first-child input[disabled] {
+  flex: 2 !important;   /* raddoppia lo spazio */
+  width: 100% !important;
+}
+
   /* Primo campo username (disabilitato) con stessa altezza delle select */
 #ct_container input[disabled] {
   height: 48px !important;
@@ -34,7 +40,11 @@
   line-height: 26px !important;
 }
 
-  
+#ct_container .row:first-child > div:nth-child(2) {
+  flex: 1;
+}
+
+ 
 /* Pulsante elimina riga */
 .ct_remove {
   width: 26px;
