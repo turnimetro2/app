@@ -651,7 +651,7 @@ ct_date.addEventListener("change", () => {
   min.setDate(today.getDate() + 6);
 
   const max = new Date();
-  max.setDate(today.getDate() + 21);
+  max.setDate(today.getDate() + 20);
 
   // Solo notifica, NON blocca l'uso
   if (selected < min || selected > max) {
