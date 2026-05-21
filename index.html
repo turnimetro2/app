@@ -9,38 +9,6 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
-.dateWrapper {
-  position: relative;
-  margin-bottom: 15px;
-}
-
-.dateWrapper input[type="date"] {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: transparent;
-  position: relative;
-  z-index: 2;
-}
-
-.datePlaceholder {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  color: #777;
-  font-size: 15px;
-  pointer-events: none;
-  z-index: 1;
-  transition: opacity 0.2s ease;
-}
-
-.dateWrapper input[type="date"]:focus + .datePlaceholder,
-.dateWrapper input[type="date"]:not(:placeholder-shown) + .datePlaceholder {
-  opacity: 0;
-}
-
  
 /* Campo turno */
 .ct_turno {
@@ -299,13 +267,7 @@
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
 
     <label for="ct_date">Data</label>
-<div class="dateWrapper">
-  <span class="datePlaceholder">Inserisci la data del cambio turno</span>
-  <input id="ct_date" type="date">
-</div>
-
-
-
+    <input id="ct_date" type="date" style="margin-bottom:15px;">
 
     <div id="ct_container"></div>
 
@@ -356,22 +318,5 @@
 <div id="toast"></div>
 
 <script src="script.js"></script>
-
- <div id="loaderOverlay" style="
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(255,255,255,0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #333;
-  z-index: 9999;
-  backdrop-filter: blur(2px);
-">
-  Ripristino sessione in corso…
-</div>
-
 </body>
 </html>
