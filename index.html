@@ -9,17 +9,6 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
- #ct_date:not(.hasFocus):invalid::before {
-  content: "Inserisci la data del cambio turno";
-  color: #777;
-}
-
- #ct_date:invalid {
-  color: transparent;
-}
-#ct_date.hasFocus {
-  color: inherit;
-}
 
  
 /* Campo turno */
@@ -278,10 +267,9 @@
   <div id="boxCambioTurno" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
 
-    
-    <input id="ct_date" type="date" style="margin-bottom:15px;" 
-       onfocus="this.classList.add('hasFocus')" 
-       onblur="this.classList.remove('hasFocus')">
+    <label for="ct_date">Data</label>
+<input id="ct_date" type="date" style="margin-bottom:15px;">
+
 
 
     <div id="ct_container"></div>
