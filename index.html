@@ -9,6 +9,37 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
+.dateWrapper {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.dateWrapper input[type="date"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.datePlaceholder {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  color: #777;
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.2s ease;
+}
+
+.dateWrapper input[type="date"]:focus + .datePlaceholder,
+.dateWrapper input[type="date"]:not(:placeholder-shown) + .datePlaceholder {
+  opacity: 0;
+}
 
  
 /* Campo turno */
@@ -268,7 +299,11 @@
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
 
     <label for="ct_date">Data</label>
-<input id="ct_date" type="date" style="margin-bottom:15px;">
+<div class="dateWrapper">
+  <span class="datePlaceholder">Inserisci la data del cambio turno</span>
+  <input id="ct_date" type="date">
+</div>
+
 
 
 
