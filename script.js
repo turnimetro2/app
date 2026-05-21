@@ -342,9 +342,12 @@ function restoreSession() {
     return;
   }
 
+  showLoader();   // 🔥 Mostra loader subito
+
   try {
     const user = JSON.parse(saved);
     if (!user || !user.username || !user.pin) {
+      hideLoader();
       showLogin();
       return;
     }
@@ -353,6 +356,7 @@ function restoreSession() {
       .then(res => {
         if (!res.success) {
           localStorage.removeItem("sessionUser");
+          hideLoader();
           showLogin();
           return;
         }
@@ -361,6 +365,9 @@ function restoreSession() {
 
         // 🔥 Carica TUTTI i dettagli utenti UNA SOLA VOLTA
         return loadUserDetails().then(() => {
+
+          hideLoader();   // 🔥 Nascondi loader appena finito
+
           if (!currentUser.email || !currentUser.matricola) {
             email.value     = currentUser.email || "";
             matricola.value = currentUser.matricola || "";
@@ -372,10 +379,12 @@ function restoreSession() {
         });
       })
       .catch(() => {
+        hideLoader();
         showLogin();
       });
 
   } catch (e) {
+    hideLoader();
     showLogin();
   }
 }
