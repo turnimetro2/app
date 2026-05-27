@@ -242,7 +242,7 @@ function toast(msg) {
   t.style.display = "block";
   setTimeout(() => {
     t.style.display = "none";
-  }, 2200);
+  }, 5000);
 }
 
 // ===== LOCK / UNLOCK PULSANTI =====
