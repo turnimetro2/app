@@ -798,10 +798,11 @@ ctUsers.forEach(u => {
 });
 
 if (invalidTurns.length > 0) {
-  toast("Attenzione!\nI seguenti turni non appartengono alla ciclazione di alcun collega:\n" + invalidTurns.join(", "));
-  unlock();
-  return;
+  toast("Attenzione!\nI seguenti turni non appartengono alla ciclazione di alcun collega:\n" 
+        + invalidTurns.join(", "));
+  // NOTIFICA NON BLOCCANTE → si prosegue comunque
 }
+
 
 
   // costruzione riepilogo principale
