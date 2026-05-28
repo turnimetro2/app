@@ -798,7 +798,7 @@ ctUsers.forEach(u => {
 });
 
 if (invalidTurns.length > 0) {
-  toast("Attenzione!\nI seguenti turni non sono di ciclazione per nessun collega per la data scelta.:\n" 
+  toast("Attenzione!\nQuesti turni non sono di ciclazione per nessun collega immesso per la data scelta:\n" 
         + invalidTurns.join(", "));
   // NOTIFICA NON BLOCCANTE → si prosegue comunque
 }
