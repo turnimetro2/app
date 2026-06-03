@@ -680,12 +680,28 @@ row.appendChild(colRemove);
     container.appendChild(row);
   });
 
-  document.querySelectorAll(".ct_user").forEach(sel => {
-    sel.addEventListener("change", e => {
-      const i = Number(e.target.dataset.index);
-      ctUsers[i].user = e.target.value;
-    });
+document.querySelectorAll(".ct_user").forEach(sel => {
+  sel.addEventListener("change", e => {
+    const i = Number(e.target.dataset.index);
+    const username = e.target.value;
+    ctUsers[i].user = username;
+
+    if (!username) return;
+
+    const details = window.userDetails?.[username] || {};
+    const missingEmail = !details.email;
+    const missingMat   = !details.matricola;
+
+    if (missingEmail && missingMat) {
+      toast(`Attenzione!\n${username} non ha registrato né email né matricola`);
+    } else if (missingEmail) {
+      toast(`Attenzione!\n${username} non ha registrato l'email`);
+    } else if (missingMat) {
+      toast(`Attenzione!\n${username} non ha registrato la matricola`);
+    }
   });
+});
+
 
   document.querySelectorAll(".ct_turno").forEach(inp => {
     inp.addEventListener("input", e => {
@@ -840,11 +856,6 @@ if (invalidTurns.length > 0) {
 
   const emailText = emailParts.join(" , ");
   ct_emails.innerText = emailText;
-
-  // notifica se mancano email o matricola per qualcuno
-  if (missingEmailUsers.length > 0 || missingMatUsers.length > 0) {
-    toast("Attenzione!\n uno o piu' colleghi selezionati non hanno ancora registrato email o matricola");
-  }
   
   unlock();
 }
