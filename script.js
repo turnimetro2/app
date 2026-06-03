@@ -852,7 +852,7 @@ function saveCambioTurno() {
   } else {
     setTimeout(() => {
       toast("Riepilogo generato correttamente");
-    }, 1000);
+    }, 2000);
   }
 
   unlock();
