@@ -236,14 +236,21 @@ function togglePasswordVisibility(input, icon, pathElement) {
 
 
 // ===== TOAST =====
+let toastActive = false;
+
 function toast(msg) {
   const t = document.getElementById("toast");
+
   t.textContent = msg;
   t.style.display = "block";
+  toastActive = true;
+
   setTimeout(() => {
     t.style.display = "none";
+    toastActive = false;
   }, 5000);
 }
+
 
 // ===== LOCK / UNLOCK PULSANTI =====
 function lock() {
@@ -741,7 +748,6 @@ function saveCambioTurno() {
     return;
   }
 
-
   // formato gg-mm-aaaa
   const d = new Date(dateVal);
   const dd = String(d.getDate()).padStart(2, "0");
@@ -757,9 +763,7 @@ function saveCambioTurno() {
 
   // validazione utenti e turni + raccolta per controlli duplicati
   const seenUsers = new Set();
-  const seenTurni = new Set();
   let duplicateUser = null;
-  let duplicateTurno = null;
 
   for (let i = 0; i < ctUsers.length; i++) {
     const u = ctUsers[i];
@@ -770,15 +774,13 @@ function saveCambioTurno() {
       return;
     }
 
-    
-if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
-  toast("Turno non valido (2-3 caratteri)");
-  unlock();
-  return;
-}
+    if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
+      toast("Turno non valido (2-3 caratteri)");
+      unlock();
+      return;
+    }
 
-
-    // controllo duplicati utente (considero solo quelli selezionati)
+    // controllo duplicati utente
     if (i > 0 && u.user) {
       if (seenUsers.has(u.user)) {
         duplicateUser = u.user;
@@ -786,8 +788,6 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
         seenUsers.add(u.user);
       }
     }
-
-
   }
 
   if (duplicateUser) {
@@ -796,54 +796,44 @@ if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
     return;
   }
 
-// ===== CONTROLLO TURNI DI CICLAZIONE =====
-const invalidTurns = [];
+  // ===== CONTROLLO TURNI DI CICLAZIONE =====
+  const invalidTurns = [];
 
-ctUsers.forEach(u => {
-  if (!u.turno) return;
+  ctUsers.forEach(u => {
+    if (!u.turno) return;
 
-  const turnoUtente = u.turno.trim().toUpperCase();
-  let match = false;
+    const turnoUtente = u.turno.trim().toUpperCase();
+    let match = false;
 
-  ctUsers.forEach(c => {
-    const real = getRealTurno(c.user, dateVal);
-    if (real && real.toUpperCase() === turnoUtente) match = true;
+    ctUsers.forEach(c => {
+      const real = getRealTurno(c.user, dateVal);
+      if (real && real.toUpperCase() === turnoUtente) match = true;
+    });
+
+    if (!match) invalidTurns.push(turnoUtente);
   });
 
-  if (!match) invalidTurns.push(turnoUtente);
-});
+  if (invalidTurns.length > 0) {
+    toast(
+      "Attenzione!\n" +
+      "i seguenti turni non sono di ciclazione per nessun collega immesso per la data specificata:\n" +
+      invalidTurns.join(", ")
+    );
+    // NOTIFICA NON BLOCCANTE → si prosegue comunque
+  }
 
-if (invalidTurns.length > 0) {
-  toast("Attenzione!\ni seguenti turni non sono di ciclazione per nessun collega immesso per la data specificata:\n" 
-        + invalidTurns.join(", "));
-  // NOTIFICA NON BLOCCANTE → si prosegue comunque
-}
-
-
-
-  // costruzione riepilogo principale
+  // ===== COSTRUZIONE RIEPILOGO =====
   let out = `${dateFormatted}\n\n`;
-
-  const missingEmailUsers = [];
-  const missingMatUsers   = [];
 
   ctUsers.forEach(u => {
     const details = window.userDetails?.[u.user] || {};
     const mat = details.matricola || "-";
-
-    if (!details.email) {
-      missingEmailUsers.push(u.user);
-    }
-    if (!details.matricola) {
-      missingMatUsers.push(u.user);
-    }
-
     out += `${u.user} matr ${mat} turno A${u.turno}\n`;
   });
 
   ct_output.innerText = out;
 
-  // costruzione elenco email destinatari (escludendo l'utente loggato e chi non ha email)
+  // ===== COSTRUZIONE EMAIL DESTINATARI =====
   const emailParts = [];
   ctUsers.forEach((u, index) => {
     if (index === 0) return; // salta utente loggato
@@ -854,11 +844,20 @@ if (invalidTurns.length > 0) {
     emailParts.push(`${u.user} <${details.email}>`);
   });
 
-  const emailText = emailParts.join(" , ");
-  ct_emails.innerText = emailText;
-  
+  ct_emails.innerText = emailParts.join(" , ");
+
+  // ===== CONFERMA FINALE (senza sovrascrivere avvisi precedenti) =====
+  if (!toastActive) {
+    toast("Riepilogo generato correttamente");
+  } else {
+    setTimeout(() => {
+      toast("Riepilogo generato correttamente");
+    }, 600);
+  }
+
   unlock();
 }
+
 
 function copyCambioTurno() {
   const text = ct_output.innerText;  // prende il riepilogo così com’è
