@@ -277,6 +277,8 @@ function showLogin() {
   boxComplete.classList.add("hidden");
   boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.add("hidden");
+  boxRiepilogo.classList.add("hidden");
+  ct_backProfile.classList.add("hidden");
 }
 
 function showComplete() {
@@ -284,7 +286,10 @@ function showComplete() {
   boxComplete.classList.remove("hidden");
   boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.add("hidden");
+  boxRiepilogo.classList.add("hidden");
+  ct_backProfile.classList.add("hidden");
 }
+
 
 function showDashboard() {
   boxLogin.classList.add("hidden");
@@ -597,6 +602,8 @@ function restoreSession() {
             fillDashboard();
             showDashboard();
           }
+          ct_backProfile.classList.add("hidden");
+
         });
       })
       .catch(() => {
