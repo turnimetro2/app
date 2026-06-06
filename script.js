@@ -290,8 +290,13 @@ function showDashboard() {
   boxLogin.classList.add("hidden");
   boxComplete.classList.add("hidden");
   boxDashboard.classList.remove("hidden");
+
+  // 🔥 Nascondi tutto ciò che riguarda il cambio turno
   boxCambioTurno.classList.add("hidden");
+  boxRiepilogo.classList.add("hidden");
+  ct_backProfile.classList.add("hidden");
 }
+
 
 // ===== CARICA UTENTI =====
 function loadUsers() {
