@@ -843,11 +843,17 @@ function saveCambioTurno() {
   // ===== COSTRUZIONE RIEPILOGO =====
   let out = `${dateFormatted}\n\n`;
 
-  ctUsers.forEach(u => {
-    const details = window.userDetails?.[u.user] || {};
-    const mat = details.matricola || "-";
-    out += `${u.user} matr ${mat} turno A${u.turno}\n`;
-  });
+// Ordina per username
+const sortedUsers = [...ctUsers].sort((a, b) =>
+  a.user.localeCompare(b.user)
+);
+
+sortedUsers.forEach(u => {
+  const details = window.userDetails?.[u.user] || {};
+  const mat = details.matricola || "-";
+  out += `${u.user} matr ${mat} turno A${u.turno}\n`;
+});
+
 
   ct_output.innerText = out;
 
@@ -862,7 +868,15 @@ function saveCambioTurno() {
     emailParts.push(`${u.user} <${details.email}>`);
   });
 
-  ct_emails.innerText = emailParts.join(" , ");
+  // Ordina destinatari per username
+emailParts.sort((a, b) => {
+  const nameA = a.split(" <")[0];
+  const nameB = b.split(" <")[0];
+  return nameA.localeCompare(nameB);
+});
+
+ct_emails.innerText = emailParts.join(" , ");
+
 
   // ===== CONFERMA FINALE (senza sovrascrivere avvisi precedenti) =====
 if (!toastActive) {
