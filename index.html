@@ -262,55 +262,68 @@
   </div>
 
 
-  <!-- CAMBIO TURNO (solo visualizzazione locale) -->
-  <div id="boxCambioTurno" class="card hidden">
-    <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
+<!-- CAMBIO TURNO (solo visualizzazione locale) -->
+<div id="boxCambioTurno" class="card hidden">
+  <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
 
-    <label for="ct_date">Data</label>
-    <input id="ct_date" type="date" style="margin-bottom:15px;">
+  <label for="ct_date">Data</label>
+  <input id="ct_date" type="date" style="margin-bottom:15px;">
 
-    <div id="ct_container"></div>
+  <div id="ct_container"></div>
 
-    <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
-    <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera riepilogo</button>
+  <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
+  <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera riepilogo</button>
+  <button id="ct_sendMail" style="background:#00796b;margin-top:10px;">Crea email</button>
+  <button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset campi</button>
+</div>
 
-<button id="ct_sendMail" style="background:#00796b;margin-top:10px;">Crea email</button>
 
-   
-    <button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset campi</button>
+<!-- 🔥 NUOVO RIQUADRO RIEPILOGO -->
+<div id="boxRiepilogo" class="card hidden">
+  <h2 style="font-size:18px;margin-top:0;">Riepilogo</h2>
 
-    <!-- NUOVO RIQUADRO EMAIL DESTINATARI -->
-    <div id="ct_emails" style="
-      margin-top:15px;
-      font-size:14px;
-      color:#333;
-      padding:12px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      background:#fafafa;
-      white-space:normal;
-      word-break:break-all;
-    "></div>
+  <!-- DESTINATARI -->
+  <div id="ct_emails" style="
+    margin-top:15px;
+    font-size:14px;
+    color:#333;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    background:#fafafa;
+    white-space:normal;
+    word-break:break-all;
+  "></div>
 
-    <button id="ct_copyEmails" style="background:#009688;margin-top:10px;">Copia destinatari</button>
+  <button id="ct_copyEmails" style="background:#009688;margin-top:10px;">Copia destinatari</button>
 
-    <!-- RIQUADRO ESISTENTE RIEPILOGO CAMBIO TURNO -->
-    <div id="ct_output" style="
-      margin-top:15px;
-      font-size:14px;
-      color:#333;
-      padding:12px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      background:#fafafa;
-      white-space:pre-line;
-    "></div>
+  <!-- CORPO MAIL -->
+  <div id="ct_output" style="
+    margin-top:15px;
+    font-size:14px;
+    color:#333;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    background:#fafafa;
+    white-space:pre-line;
+  "></div>
 
-    <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia corpo mail</button>
+  <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia corpo mail</button>
+</div>
 
-   <button id="ct_backProfile" style="background:#455a64;margin-top:10px;">Profilo utente</button>
 
-  </div>
+<!-- 🔥 PULSANTE PROFILO UTENTE (fuori da tutto) -->
+<button id="ct_backProfile" class="hidden" style="
+  background:#455a64;
+  margin:20px auto;
+  display:block;
+  width:90%;
+  max-width:420px;
+">
+  Profilo utente
+</button>
+
 
 
 </div>
