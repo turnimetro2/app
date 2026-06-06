@@ -858,15 +858,22 @@ function saveCambioTurno() {
   ct_emails.innerText = emailParts.join(" , ");
 
   // ===== CONFERMA FINALE (senza sovrascrivere avvisi precedenti) =====
-  if (!toastActive) {
+if (!toastActive) {
+  toast("Riepilogo generato correttamente");
+} else {
+  setTimeout(() => {
     toast("Riepilogo generato correttamente");
-  } else {
-    setTimeout(() => {
-      toast("Riepilogo generato correttamente");
-    }, 3000);
-  }
+  }, 3000);
+}
 
-  unlock();
+// 🔥 SCROLL MORBIDO AL RIQUADRO RIEPILOGO
+document.getElementById("boxRiepilogo").scrollIntoView({
+  behavior: "smooth",
+  block: "start"
+});
+
+unlock();
+
 }
 
 
