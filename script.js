@@ -928,7 +928,9 @@ document.getElementById("togglePinProfile").addEventListener("click", () => {
   const ct_sendMail = document.getElementById("ct_sendMail");
 ct_sendMail.addEventListener("click", sendCambioTurnoEmail);
 
-  
+  window.boxRiepilogo = document.getElementById("boxRiepilogo");
+window.ct_backProfile = document.getElementById("ct_backProfile");
+
   // cache elementi
   window.boxLogin       = document.getElementById("boxLogin");
   window.boxComplete    = document.getElementById("boxComplete");
