@@ -205,10 +205,10 @@ function backToProfile() {
 
 
 function getRealTurno(username, dateVal) {
-  const row = window.userDetails?.[username]?.riga; // colonna E
-  if (!row) return null;
+  const ciclo = Number(window.userDetails?.[username]?.ciclo || 0);
+  if (!ciclo) return null;
 
-  const offset = (Number(row) - 1) * 7;
+  const offset = (ciclo - 1) * 7;
 
   const d0 = CYCLE_START;
   const d1 = new Date(dateVal);
@@ -217,6 +217,7 @@ function getRealTurno(username, dateVal) {
   const index = (offset + diffDays) % CYCLING.length;
   return CYCLING[index];
 }
+
 
 
 
