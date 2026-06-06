@@ -198,8 +198,11 @@ let ctUsers = []; // cambio turno solo in memoria
 
 function backToProfile() {
   boxCambioTurno.classList.add("hidden");
+  boxRiepilogo.classList.add("hidden");
+  ct_backProfile.classList.add("hidden");
   boxDashboard.classList.remove("hidden");
 }
+
 
 function getRealTurno(username, dateVal) {
   const row = window.userDetails?.[username]?.riga; // colonna E
@@ -636,6 +639,8 @@ function sendCambioTurnoEmail() {
 function showCambioTurno() {
   boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.remove("hidden");
+  boxRiepilogo.classList.remove("hidden");
+  ct_backProfile.classList.remove("hidden");
 
   if (ctUsers.length === 0) {
     ctUsers = [
@@ -645,6 +650,7 @@ function showCambioTurno() {
   }
   renderCambioTurno();
 }
+
 
 function renderCambioTurno() {
   const container = ct_container;
