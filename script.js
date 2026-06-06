@@ -815,27 +815,29 @@ function saveCambioTurno() {
     return;
   }
 
-  // ===== CONTROLLO TURNI DI CICLAZIONE =====
+  // ===== VALIDAZIONE TURNI (solo utenti immessi) =====
   const invalidTurns = [];
+
+  // Precalcolo i turni reali SOLO degli utenti immessi
+  const realTurns = ctUsers
+    .map(c => getRealTurno(c.user, dateVal))
+    .filter(t => t) // rimuove null
+    .map(t => t.toUpperCase());
 
   ctUsers.forEach(u => {
     if (!u.turno) return;
 
-    const turnoUtente = u.turno.trim().toUpperCase();
-    let match = false;
+    const turnoInserito = u.turno.trim().toUpperCase();
 
-    ctUsers.forEach(c => {
-      const real = getRealTurno(c.user, dateVal);
-      if (real && real.toUpperCase() === turnoUtente) match = true;
-    });
-
-    if (!match) invalidTurns.push(turnoUtente);
+    if (!realTurns.includes(turnoInserito)) {
+      invalidTurns.push(turnoInserito);
+    }
   });
 
   if (invalidTurns.length > 0) {
     toast(
       "Attenzione!\n" +
-      "i seguenti turni non sono di ciclazione per nessun collega immesso per la data specificata:\n" +
+      "i seguenti turni non appartengono a nessuno degli utenti immessi:\n" +
       invalidTurns.join(", ")
     );
     // NOTIFICA NON BLOCCANTE → si prosegue comunque
@@ -844,17 +846,16 @@ function saveCambioTurno() {
   // ===== COSTRUZIONE RIEPILOGO =====
   let out = `${dateFormatted}\n\n`;
 
-// Ordina per username
-const sortedUsers = [...ctUsers].sort((a, b) =>
-  a.user.localeCompare(b.user)
-);
+  // Ordina per username
+  const sortedUsers = [...ctUsers].sort((a, b) =>
+    a.user.localeCompare(b.user)
+  );
 
-sortedUsers.forEach(u => {
-  const details = window.userDetails?.[u.user] || {};
-  const mat = details.matricola || "-";
-  out += `${u.user} matr ${mat} turno A${u.turno}\n`;
-});
-
+  sortedUsers.forEach(u => {
+    const details = window.userDetails?.[u.user] || {};
+    const mat = details.matricola || "-";
+    out += `${u.user} matr ${mat} turno A${u.turno}\n`;
+  });
 
   ct_output.innerText = out;
 
@@ -870,33 +871,32 @@ sortedUsers.forEach(u => {
   });
 
   // Ordina destinatari per username
-emailParts.sort((a, b) => {
-  const nameA = a.split(" <")[0];
-  const nameB = b.split(" <")[0];
-  return nameA.localeCompare(nameB);
-});
+  emailParts.sort((a, b) => {
+    const nameA = a.split(" <")[0];
+    const nameB = b.split(" <")[0];
+    return nameA.localeCompare(nameB);
+  });
 
-ct_emails.innerText = emailParts.join(" , ");
+  ct_emails.innerText = emailParts.join(" , ");
 
-
-  // ===== CONFERMA FINALE (senza sovrascrivere avvisi precedenti) =====
-if (!toastActive) {
-  toast("Riepilogo generato correttamente");
-} else {
-  setTimeout(() => {
+  // ===== CONFERMA FINALE =====
+  if (!toastActive) {
     toast("Riepilogo generato correttamente");
-  }, 3000);
+  } else {
+    setTimeout(() => {
+      toast("Riepilogo generato correttamente");
+    }, 3000);
+  }
+
+  // scroll al riepilogo
+  document.getElementById("boxRiepilogo").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  unlock();
 }
 
-// 🔥 SCROLL MORBIDO AL RIQUADRO RIEPILOGO
-document.getElementById("boxRiepilogo").scrollIntoView({
-  behavior: "smooth",
-  block: "start"
-});
-
-unlock();
-
-}
 
 
 function copyCambioTurno() {
