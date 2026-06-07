@@ -837,7 +837,7 @@ function saveCambioTurno() {
   if (invalidTurns.length > 0) {
     toast(
       "Attenzione!\n" +
-      "i seguenti turni non appartengono a nessuno degli utenti immessi:\n" +
+      "i seguenti turni non appartengono di ciclazione a nessuno degli utenti selezionati per quella data:\n" +
       invalidTurns.join(", ")
     );
     // NOTIFICA NON BLOCCANTE → si prosegue comunque
@@ -880,14 +880,15 @@ function saveCambioTurno() {
   ct_emails.innerText = emailParts.join(" , ");
 
   // ===== CONFERMA FINALE =====
+  /*
   if (!toastActive) {
     toast("Riepilogo generato correttamente");
   } else {
     setTimeout(() => {
       toast("Riepilogo generato correttamente");
-    }, 3000);
+    }, 2000);
   }
-
+*/
   // scroll al riepilogo
   document.getElementById("boxRiepilogo").scrollIntoView({
     behavior: "smooth",
@@ -902,7 +903,7 @@ function saveCambioTurno() {
 function copyCambioTurno() {
   const text = ct_output.innerText;  // prende il riepilogo così com’è
   if (!text.trim()) {
-    toast("Nessun corpo mail da copiare");
+    toast("Nessun corpo mail da copiare.Genera prima un riepilogo.");
     return;
   }
   navigator.clipboard.writeText(text)
@@ -913,7 +914,7 @@ function copyCambioTurno() {
 function copyCambioTurnoEmails() {
   const text = ct_emails.innerText;
   if (!text.trim()) {
-    toast("Nessun destinatario da copiare");
+    toast("Nessun destinatario da copiare.Genera prima un riepilogo.");
     return;
   }
   navigator.clipboard.writeText(text)
