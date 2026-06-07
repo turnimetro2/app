@@ -914,7 +914,7 @@ function copyCambioTurno() {
 function copyCambioTurnoEmails() {
   const text = ct_emails.innerText;
   if (!text.trim()) {
-    toast("Nessun destinatario da copiare.Genera prima un riepilogo.");
+    toast("Nessun destinatario da copiare.");
     return;
   }
   navigator.clipboard.writeText(text)
