@@ -190,11 +190,20 @@
     flex: 1;
   }
 
-  .placeholder::before {
+.placeholder {
+  position: relative;
+  display: flex;
+  align-items: center;      /* centra verticalmente */
+  justify-content: center;  /* centra orizzontalmente */
+}
+
+.placeholder::before {
   content: attr(data-placeholder);
   color: #888;
   font-style: italic;
+  pointer-events: none;     /* evita interazioni */
 }
+
  
 </style>
 </head>
