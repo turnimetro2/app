@@ -255,6 +255,10 @@ function toast(msg) {
   }, 5000);
 }
 
+function clearRiepilogo() {
+  ct_output.innerHTML = "";
+  ct_emails.innerHTML = "";
+}
 
 // ===== LOCK / UNLOCK PULSANTI =====
 function lock() {
@@ -708,6 +712,8 @@ row.appendChild(colRemove);
 
 document.querySelectorAll(".ct_user").forEach(sel => {
   sel.addEventListener("change", e => {
+  clearRiepilogo();   // 🔥 reset riepilogo
+
     const i = Number(e.target.dataset.index);
     const username = e.target.value;
     ctUsers[i].user = username;
@@ -731,6 +737,8 @@ document.querySelectorAll(".ct_user").forEach(sel => {
 
   document.querySelectorAll(".ct_turno").forEach(inp => {
     inp.addEventListener("input", e => {
+  clearRiepilogo();   // 🔥 reset riepilogo
+
       const i = Number(e.target.dataset.index);
       ctUsers[i].turno = e.target.value.trim();
     });
@@ -738,6 +746,8 @@ document.querySelectorAll(".ct_user").forEach(sel => {
 
   document.querySelectorAll(".ct_remove").forEach(btn => {
   btn.addEventListener("click", e => {
+    clearRiepilogo();   // 🔥 reset riepilogo
+
     const i = Number(e.target.dataset.index);
     ctUsers.splice(i, 1);
     renderCambioTurno();
@@ -949,6 +959,10 @@ function resetCambioTurno() {
 document.addEventListener("DOMContentLoaded", () => {
 
 ct_date.addEventListener("change", () => {
+
+  clearRiepilogo();   // 🔥 reset riepilogo
+
+  
   const today = new Date();
   const selected = new Date(ct_date.value);
 
