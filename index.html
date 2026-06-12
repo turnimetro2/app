@@ -9,6 +9,8 @@
 <title>Cambi Turno - WebApp</title>
 <style>
 
+
+
  
 /* Campo turno */
 .ct_turno {
@@ -187,6 +189,13 @@
   .row > div {
     flex: 1;
   }
+
+  .placeholder::before {
+  content: attr(data-placeholder);
+  color: #888;
+  font-style: italic;
+}
+ 
 </style>
 </head>
 <body>
