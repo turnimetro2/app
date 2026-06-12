@@ -793,11 +793,20 @@ function saveCambioTurno() {
       return;
     }
 
-    if (!/^[A-Za-z0-9]{2,3}$/.test(u.turno)) {
-      toast("Turno non valido (2-3 caratteri)");
-      unlock();
-      return;
-    }
+// 🔥 Controllo turno vuoto
+if (!u.turno || u.turno.trim() === "") {
+  toast("Compila tutti i campi turno.");
+  unlock();
+  return;
+}
+
+// 🔥 Nuova validazione: 1-3 caratteri alfanumerici
+if (!/^[A-Za-z0-9]{1,3}$/.test(u.turno)) {
+  toast("Turno non valido (1-3 caratteri alfanumerici)");
+  unlock();
+  return;
+}
+
 
     // controllo duplicati utente
     if (i > 0 && u.user) {
