@@ -758,13 +758,17 @@ document.querySelectorAll(".ct_user").forEach(sel => {
 }
 
 function addCambioTurnoUser() {
+  clearRiepilogo();   // 🔥 svuota riepilogo quando aggiungi una riga
+
   if (ctUsers.length >= 15) {
     toast("Max 15 utenti");
     return;
   }
+
   ctUsers.push({ user: "", turno: "" });
   renderCambioTurno();
 }
+
 
 function saveCambioTurno() {
   if (isBusy) return;
