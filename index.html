@@ -48,6 +48,7 @@
 
  
 /* Pulsante elimina riga */
+/* Pulsante elimina riga */
 .ct_remove {
   width: 26px;
   height: 26px;
@@ -57,10 +58,18 @@
   border-radius: 50%;
   font-weight: bold;
   cursor: pointer;
-  line-height: 26px;
-  text-align: center;
-  padding: 0;
   transition: background 0.2s ease;
+
+  /* 🔥 centratura perfetta */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+ .row > div:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ct_remove:hover {
