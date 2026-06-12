@@ -257,8 +257,14 @@ function toast(msg) {
 
 function clearRiepilogo() {
   ct_output.innerHTML = "";
+  ct_output.classList.add("placeholder");
+  ct_output.setAttribute("data-placeholder", "genera un riepilogo");
+
   ct_emails.innerHTML = "";
+  ct_emails.classList.add("placeholder");
+  ct_emails.setAttribute("data-placeholder", "genera un riepilogo");
 }
+
 
 // ===== LOCK / UNLOCK PULSANTI =====
 function lock() {
