@@ -886,6 +886,10 @@ if (!/^[A-Za-z0-9]{1,3}$/.test(u.turno)) {
     out += `${u.user} matr ${mat} turno A${u.turno}\n`;
   });
 
+  ct_output.classList.remove("placeholder");
+ct_emails.classList.remove("placeholder");
+
+  
   ct_output.innerText = out;
 
   // ===== COSTRUZIONE EMAIL DESTINATARI =====
