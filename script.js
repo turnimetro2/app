@@ -815,7 +815,7 @@ function saveCambioTurno() {
 
 // 🔥 Controllo turno vuoto
 if (!u.turno || u.turno.trim() === "") {
-  toast("Compila tutti i campi turno.");
+  toast("Inserisci tutti i turni.");
   unlock();
   return;
 }
