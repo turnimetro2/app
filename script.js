@@ -961,13 +961,14 @@ function resetCambioTurno() {
     { user: "", turno: "" }
   ];
 
-  ct_date.value = "";        // reset data
-  ct_output.innerHTML = "";  // reset riepilogo
-  ct_emails.innerHTML = "";  // reset elenco email
+  ct_date.value = "";        
+
+  clearRiepilogo();   // 🔥 aggiungi questo
 
   renderCambioTurno();
   toast("Reset effettuato");
 }
+
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
@@ -1028,6 +1029,9 @@ window.ct_backProfile = document.getElementById("ct_backProfile");
   window.ct_container = document.getElementById("ct_container");
   window.ct_output    = document.getElementById("ct_output");
   window.ct_emails    = document.getElementById("ct_emails");
+
+  clearRiepilogo();
+
 
   const btnLogin       = document.getElementById("btnLogin");
   const btnComplete    = document.getElementById("btnComplete");
