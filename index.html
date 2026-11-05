@@ -4,17 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
-
-
 <title>Cambi Turno - WebApp</title>
 <style>
-
-
-
- 
 /* Campo turno */
 .ct_turno {
-  width: 80px !important;   /* mostra bene 3 caratteri */
+  width: 80px !important;
   text-align: center;
   font-size: 16px;
   padding: 10px;
@@ -40,7 +34,7 @@
   border: 1px solid #ccc;
 }
 
-  /* Primo campo username (disabilitato) con stessa altezza delle select */
+/* Primo campo username (disabilitato) con stessa altezza delle select */
 #ct_container input[disabled] {
   height: 48px !important;
   padding: 10px !important;
@@ -48,7 +42,7 @@
   line-height: 26px !important;
 }
 
- /* Raddoppia la larghezza della colonna username nella prima riga */
+/* Raddoppia la larghezza della colonna username nella prima riga */
 #ct_container .row:first-child > div:first-child {
   flex: 8 !important;
 }
@@ -58,8 +52,6 @@
   flex: 1 !important;
 }
 
- 
-/* Pulsante elimina riga */
 /* Pulsante elimina riga */
 .ct_remove {
   width: 26px;
@@ -71,197 +63,213 @@
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease;
-
-  /* 🔥 centratura perfetta */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
- .row > div:last-child {
+.row > div:last-child {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.ct_remove:hover {
-  background: #bdbdbd;
+.ct_remove:hover { background: #bdbdbd; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f5f5;
+  font-size: 16px;
 }
 
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+}
 
- 
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f5f5f5;
-    font-size: 16px;
-  }
-
-  .container {
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 16px;
-  }
-
-  .card {
-    background: #fff;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    margin-bottom: 16px;
-  }
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
 
 .pinToggle {
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  width:20px;
-  height:20px;
-  fill:#666;
-  opacity:0.55;
-  cursor:pointer;
-  transition:opacity 0.2s ease;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  fill: #666;
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.pinToggle:hover { opacity: 0.9; }
+
+label {
+  display: block;
+  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 4px;
 }
 
-.pinToggle:hover {
-  opacity:0.9;
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
 }
 
- 
-  label {
-    display: block;
-    font-size: 14px;
-    margin-top: 8px;
-    margin-bottom: 4px;
-  }
+input:disabled { background: #eee; }
 
-  input, select, button {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-  }
+button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+}
+button:disabled { opacity: 0.6; }
+.hidden { display: none; }
 
-  input:disabled {
-    background: #eee;
-  }
+#toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: none;
+  z-index: 999;
+  text-align: center;
+  white-space: pre-line;
+}
 
-  button {
-    background: #1976d2;
-    color: #fff;
-    border: none;
-    font-weight: 600;
-  }
+.version {
+  text-align: center;
+  font-size: 11px;
+  color: #777;
+  margin-top: 10px;
+}
 
-  button:disabled {
-    opacity: 0.6;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  #toast {
-    position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: 20px;
-    font-size: 14px;
-    display: none;
-    z-index: 999;
-
-     text-align: center;   /* <--- AGGIUNGI QUESTA */
-  white-space: pre-line; /* <--- AGGIUNGI QUESTA */
-   
-  }
-
-  .version {
-    text-align: center;
-    font-size: 11px;
-    color: #777;
-    margin-top: 10px;
-  }
-
-  .row {
-    display: flex;
-    gap: 8px;
-  }
-
-  .row > div {
-    flex: 1;
-  }
+.row { display: flex; gap: 8px; }
+.row > div { flex: 1; }
 
 .placeholder {
   position: relative;
   display: flex;
-  align-items: center;      /* centra verticalmente */
-  justify-content: center;  /* centra orizzontalmente */
+  align-items: center;
+  justify-content: center;
 }
-
 .placeholder::before {
   content: attr(data-placeholder);
   color: #888;
   font-style: italic;
-  pointer-events: none;     /* evita interazioni */
+  pointer-events: none;
 }
 
- 
+/* Layout dedicato ai due campi turno */
+.ct_turni_wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Correzioni per schermi Android e telefoni stretti */
+@media screen and (max-width: 600px) {
+  #ct_container { width: 100%; min-width: 0; }
+
+  #ct_container .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 28px;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  #ct_container .row > div {
+    flex: initial !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  #ct_container .ct_user,
+  #ct_container .row > div > input[disabled] {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+  }
+
+  .ct_turni_wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 60px) minmax(0, 1fr);
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  #ct_container .ct_turno_reale,
+  #ct_container .ct_turno {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    padding: 10px 4px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  #ct_container .ct_remove {
+    width: 26px;
+    min-width: 26px;
+    padding: 0;
+    margin: 0 auto 10px;
+  }
+}
 </style>
 </head>
 <body>
-
 <div class="container">
 
   <!-- LOGIN -->
   <div id="boxLogin" class="card">
     <h2 style="font-size:18px;margin-top:0;">Login</h2>
-
     <label for="selUser">Seleziona username</label>
-    <select id="selUser">
-      <option value="">Caricamento utenti...</option>
-    </select>
-
+    <select id="selUser"><option value="">Caricamento utenti...</option></select>
     <label for="pin">PIN (6 cifre)</label>
-
-
-   <div style="position:relative;">
-  <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN (6 cifre)">
-<svg id="togglePinLogin" class="pinToggle" viewBox="0 0 24 24">
-  <path id="togglePinLoginPath" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
-</svg>
-
-
-</div>
-
-   
-
+    <div style="position:relative;">
+      <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN (6 cifre)">
+      <svg id="togglePinLogin" class="pinToggle" viewBox="0 0 24 24">
+        <path id="togglePinLoginPath" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
+      </svg>
+    </div>
     <button id="btnLogin">Login</button>
   </div>
 
   <!-- COMPLETAMENTO DATI -->
   <div id="boxComplete" class="card hidden">
-
-
-  
-
-   
     <h2 style="font-size:18px;margin-top:0;">Completa i tuoi dati</h2>
-
     <label for="email">Email</label>
     <input id="email" type="email" placeholder="esempio@dominio.it">
-
     <label for="matricola">Matricola (5 cifre)</label>
     <input id="matricola" type="text" inputmode="numeric" maxlength="5" placeholder="es. 01234">
-
     <button id="btnComplete">Salva dati</button>
     <button id="btnLogout2" style="margin-top:10px;background:#c62828;">Logout</button>
   </div>
@@ -269,125 +277,51 @@
   <!-- DASHBOARD -->
   <div id="boxDashboard" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Profilo utente</h2>
-
     <label for="d_user">Username</label>
     <input id="d_user" type="text" disabled>
-
     <label for="d_pin">PIN (6 cifre)</label>
-
-   
     <div style="position:relative;">
-  <input id="d_pin" type="password" inputmode="numeric" maxlength="6">
-<svg id="togglePinProfile" class="pinToggle" viewBox="0 0 24 24">
-  <path id="togglePinProfilePath" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
-</svg>
-
-
-</div>
-
-
+      <input id="d_pin" type="password" inputmode="numeric" maxlength="6">
+      <svg id="togglePinProfile" class="pinToggle" viewBox="0 0 24 24">
+        <path id="togglePinProfilePath" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
+      </svg>
+    </div>
     <label for="d_email">Email</label>
     <input id="d_email" type="email">
-
     <label for="d_mat">Matricola (5 cifre)</label>
     <input id="d_mat" type="text" inputmode="numeric" maxlength="5">
-
     <button id="btnSave">Salva</button>
-   <button id="btnLogout" style="margin-top:10px;background:#c62828;">Logout</button>
-   <button id="btnCambioTurno" style="margin-top:10px;background:#455a64;">Cambio turno</button>
-
+    <button id="btnLogout" style="margin-top:10px;background:#c62828;">Logout</button>
+    <button id="btnCambioTurno" style="margin-top:10px;background:#455a64;">Cambio turno</button>
   </div>
 
+  <!-- CAMBIO TURNO -->
+  <div id="boxCambioTurno" class="card hidden">
+    <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
+    <label for="ct_date">Data</label>
+    <input id="ct_date" type="date" style="margin-bottom:15px;">
+    <div id="ct_container"></div>
+    <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
+    <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera riepilogo</button>
+    <button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset campi</button>
+  </div>
 
-<!-- CAMBIO TURNO (solo visualizzazione locale) -->
-<div id="boxCambioTurno" class="card hidden">
-  <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
-
-  <label for="ct_date">Data</label>
-  <input id="ct_date" type="date" style="margin-bottom:15px;">
-
-  <div id="ct_container"></div>
-
-  <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
-  <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera riepilogo</button>
-  
-  <button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset campi</button>
-</div>
-
-
-<!-- 🔥 NUOVO RIQUADRO RIEPILOGO -->
-<div id="boxRiepilogo" class="card hidden">
-  <h2 style="font-size:18px;margin-top:0;">Riepilogo</h2>
-
-  <!-- DESTINATARI -->
-  <div id="ct_emails" style="
-    margin-top:15px;
-    font-size:14px;
-    color:#333;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    background:#fafafa;
-    white-space:normal;
-    word-break:break-all;
-  "></div>
-
-  <button id="ct_copyEmails" style="background:#009688;margin-top:10px;">Copia destinatari</button>
-
-  <!-- CORPO MAIL -->
-  <div id="ct_output" style="
-    margin-top:15px;
-    font-size:14px;
-    color:#333;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    background:#fafafa;
-    white-space:pre-line;
-  "></div>
-
-  <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia corpo mail</button>
- <button id="ct_sendMail" style="background:#00796b;margin-top:10px;">Crea email</button>
-
- <!-- 🔥 PULSANTE PROFILO UTENTE (fuori da tutto) -->
-<button id="ct_backProfile" class="hidden" style="
-  background:#455a64;
-  margin:20px auto;
-  display:block;
-  width:90%;
-  max-width:420px;
-">
-  Profilo utente
-</button>
- 
-</div>
-
-
-
-
-
-
+  <!-- RIEPILOGO -->
+  <div id="boxRiepilogo" class="card hidden">
+    <h2 style="font-size:18px;margin-top:0;">Riepilogo</h2>
+    <div id="ct_emails" style="margin-top:15px;font-size:14px;color:#333;padding:12px;border:1px solid #ccc;border-radius:8px;background:#fafafa;white-space:normal;word-break:break-all;"></div>
+    <button id="ct_copyEmails" style="background:#009688;margin-top:10px;">Copia destinatari</button>
+    <div id="ct_output" style="margin-top:15px;font-size:14px;color:#333;padding:12px;border:1px solid #ccc;border-radius:8px;background:#fafafa;white-space:pre-line;"></div>
+    <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia corpo mail</button>
+    <button id="ct_sendMail" style="background:#00796b;margin-top:10px;">Crea email</button>
+    <button id="ct_backProfile" class="hidden" style="background:#455a64;margin:20px auto;display:block;width:90%;max-width:420px;">Profilo utente</button>
+  </div>
 </div>
 
 <div id="toast"></div>
-
 <script src="script.js"></script>
- 
- <div id="loaderOverlay" style="
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(255,255,255,0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #333;
-  z-index: 9999;
-  backdrop-filter: blur(2px);
-">
+<div id="loaderOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.85);display:none;align-items:center;justify-content:center;font-size:18px;color:#333;z-index:9999;backdrop-filter:blur(2px);">
   Ripristino sessione in corso…
 </div>
-
 </body>
 </html>
