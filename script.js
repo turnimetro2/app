@@ -694,11 +694,32 @@ function renderCambioTurno() {
       colUser.innerHTML = `<select data-index="${index}" class="ct_user">${options}</select>`;
     }
 
-    const colTurno = document.createElement("div");
-    colTurno.innerHTML = `
-     <input type="text" class="ct_turno" maxlength="3" data-index="${index}" placeholder="Turno" value="${u.turno || ""}">
+const turnoCiclazione =
+  ct_date.value && u.user
+    ? (getRealTurno(u.user, ct_date.value) || "")
+    : "";
 
-    `;
+const colTurno = document.createElement("div");
+
+colTurno.innerHTML = `
+<div style="display:flex;gap:8px;align-items:center;">
+  <input
+    type="text"
+    class="ct_turno_reale"
+    value="${turnoCiclazione}"
+    disabled
+  >
+
+  <input
+    type="text"
+    class="ct_turno"
+    maxlength="3"
+    data-index="${index}"
+    placeholder="Turno"
+    value="${u.turno || ""}"
+  >
+</div>
+`;
 
     row.appendChild(colUser);
     row.appendChild(colTurno);
