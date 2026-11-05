@@ -745,6 +745,17 @@ document.querySelectorAll(".ct_user").forEach(sel => {
     const username = e.target.value;
     ctUsers[i].user = username;
 
+const turnoField =
+  e.target.closest(".row")
+          .querySelector(".ct_turno_reale");
+
+if (!ct_date.value || !username) {
+  turnoField.value = "";
+} else {
+  turnoField.value =
+    getRealTurno(username, ct_date.value) || "";
+}
+
     if (!username) return;
 
     const details = window.userDetails?.[username] || {};
