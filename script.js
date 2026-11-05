@@ -996,20 +996,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 ct_date.addEventListener("change", () => {
 
-  clearRiepilogo();   // 🔥 reset riepilogo
+  clearRiepilogo();
 
-  
+  renderCambioTurno();   // <-- aggiorna i turni da ciclazione
+
   const today = new Date();
   const selected = new Date(ct_date.value);
 
-  // Calcola intervallo valido
   const min = new Date();
   min.setDate(today.getDate() + 6);
 
   const max = new Date();
   max.setDate(today.getDate() + 20);
 
-  // Solo notifica, NON blocca l'uso
   if (selected < min || selected > max) {
     toast("Attenzione!\n la data selezionata è fuori dal range 7–20 giorni da oggi");
   }
