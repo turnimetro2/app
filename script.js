@@ -214,7 +214,8 @@ function getRealTurno(username, dateVal) {
   const d1 = new Date(dateVal);
   const diffDays = Math.floor((d1 - d0) / (1000 * 60 * 60 * 24));
 
-  const index = (offset + diffDays) % CYCLING.length;
+  const rawIndex = offset + diffDays;
+  const index = ((rawIndex % CYCLING.length) + CYCLING.length) % CYCLING.length;
   return CYCLING[index];
 }
 
@@ -438,6 +439,7 @@ function doComplete() {
 loadUserDetails().then(() => {
   // aggiorna anche i dettagli in memoria
   window.userDetails[currentUser.username] = {
+    ...(window.userDetails?.[currentUser.username] || {}),
     pin: currentUser.pin,
     email: currentUser.email,
     matricola: currentUser.matricola
@@ -528,6 +530,7 @@ function doSaveDashboard() {
 loadUserDetails().then(() => {
   // aggiorna anche i dettagli in memoria
   window.userDetails[currentUser.username] = {
+    ...(window.userDetails?.[currentUser.username] || {}),
     pin: currentUser.pin,
     email: currentUser.email,
     matricola: currentUser.matricola
@@ -659,6 +662,26 @@ function sendCambioTurnoEmail() {
 }
 
 
+// Aggiorna i turni reali di TUTTE le righe già presenti.
+// Se manca la data o il collega, lascia il campo vuoto.
+function updateRealTurns() {
+  const dateVal = ct_date.value.trim();
+
+  ctUsers.forEach((u, index) => {
+    const field = ct_container.querySelector(
+      `.ct_turno_reale[data-index="${index}"]`
+    );
+    if (!field) return;
+
+    if (!dateVal || !u.user) {
+      field.value = "";
+      return;
+    }
+
+    field.value = getRealTurno(u.user, dateVal) || "";
+  });
+}
+
 function showCambioTurno() {
   boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.remove("hidden");
@@ -702,10 +725,11 @@ const turnoCiclazione =
 const colTurno = document.createElement("div");
 
 colTurno.innerHTML = `
-<div style="display:flex;gap:8px;align-items:center;">
+<div class="ct_turni_wrapper">
   <input
     type="text"
     class="ct_turno_reale"
+    data-index="${index}"
     value="${turnoCiclazione}"
     disabled
   >
@@ -745,16 +769,7 @@ document.querySelectorAll(".ct_user").forEach(sel => {
     const username = e.target.value;
     ctUsers[i].user = username;
 
-const turnoField =
-  e.target.closest(".row")
-          .querySelector(".ct_turno_reale");
-
-if (!ct_date.value || !username) {
-  turnoField.value = "";
-} else {
-  turnoField.value =
-    getRealTurno(username, ct_date.value) || "";
-}
+    updateRealTurns();
 
     if (!username) return;
 
@@ -1009,7 +1024,8 @@ ct_date.addEventListener("change", () => {
 
   clearRiepilogo();
 
-  renderCambioTurno();   // <-- aggiorna i turni da ciclazione
+  renderCambioTurno();
+  updateRealTurns();
 
   const today = new Date();
   const selected = new Date(ct_date.value);
@@ -1024,8 +1040,13 @@ ct_date.addEventListener("change", () => {
     toast("Attenzione!\n la data selezionata è fuori dal range 7–20 giorni da oggi");
   }
 });
-  
-  
+
+ct_date.addEventListener("input", () => {
+  clearRiepilogo();
+  updateRealTurns();
+});
+
+
 document.getElementById("togglePinLogin").addEventListener("click", () => {
   togglePasswordVisibility(pin, togglePinLogin, togglePinLoginPath);
 });
