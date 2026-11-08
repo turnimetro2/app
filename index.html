@@ -34,12 +34,40 @@
   border: 1px solid #ccc;
 }
 
-/* Primo campo username (disabilitato) con stessa altezza delle select */
-#ct_container input[disabled] {
+/* Campi modificabili del cambio turno */
+#ct_container .ct_user {
   height: 48px !important;
-  padding: 10px !important;
-  font-size: 16px !important;
-  line-height: 26px !important;
+  background: #fff !important;
+}
+
+#ct_date {
+  background: #fff !important;
+}
+
+/* Segnaposto visibile sul campo data */
+.ct_date_wrapper {
+  position: relative;
+}
+
+.ct_date_placeholder {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 14px;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.ct_date_placeholder.hidden {
+  display: none;
+}
+
+/* Titoli centrati nei rispettivi riquadri */
+#boxDashboard > h2,
+#boxCambioTurno > h2 {
+  text-align: center;
 }
 
 /* Raddoppia la larghezza della colonna username nella prima riga */
@@ -130,6 +158,42 @@ input, select, button {
 }
 
 input:disabled { background: #eee; }
+
+/* Titoli centrati nei rispettivi riquadri */
+#boxDashboard > h2,
+#boxCambioTurno > h2 {
+  text-align: center;
+}
+
+/* Campi modificabili del cambio turno */
+#ct_date,
+#ct_container .ct_user {
+  background: #fff;
+}
+
+/* Placeholder visibile nel campo data finché non viene scelta una data */
+.ct_date_wrap {
+  position: relative;
+  width: 100%;
+}
+
+#ct_date.is-empty {
+  color: transparent;
+}
+
+#ct_date_placeholder {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-style: italic;
+  pointer-events: none;
+}
+
+#ct_date:not(.is-empty) + #ct_date_placeholder {
+  display: none;
+}
 
 button {
   background: #1976d2;
@@ -298,8 +362,10 @@ button:disabled { opacity: 0.6; }
   <!-- CAMBIO TURNO -->
   <div id="boxCambioTurno" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
-    <label for="ct_date">Data</label>
-    <input id="ct_date" type="date" style="margin-bottom:15px;">
+    <div class="ct_date_wrap" style="margin-bottom:15px;">
+      <input id="ct_date" class="is-empty" type="date" style="margin-bottom:0;background:#fff;">
+      <span id="ct_date_placeholder">seleziona una data</span>
+    </div>
     <div id="ct_container"></div>
     <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
     <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera riepilogo</button>
