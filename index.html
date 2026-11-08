@@ -65,8 +65,10 @@
 }
 
 /* Titoli centrati nei rispettivi riquadri */
+#boxLogin > h2,
 #boxDashboard > h2,
-#boxCambioTurno > h2 {
+#boxCambioTurno > h2,
+#boxRiepilogo > h2 {
   text-align: center;
 }
 
@@ -139,6 +141,7 @@ body {
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
+
 .pinToggle:hover { opacity: 0.9; }
 
 label {
@@ -159,9 +162,17 @@ input, select, button {
 
 input:disabled { background: #eee; }
 
+/* Selettore username nella schermata di login */
+#selUser {
+  background-color: #fff !important;
+  color: #222;
+}
+
 /* Titoli centrati nei rispettivi riquadri */
+#boxLogin > h2,
 #boxDashboard > h2,
-#boxCambioTurno > h2 {
+#boxCambioTurno > h2,
+#boxRiepilogo > h2 {
   text-align: center;
 }
 
@@ -177,17 +188,23 @@ input:disabled { background: #eee; }
   width: 100%;
 }
 
+/* Il testo della data deve restare visibile anche dopo la selezione */
+#ct_date,
 #ct_date.is-empty {
-  color: transparent;
+  color: #222 !important;
+  text-align: center;
 }
 
+/* Placeholder centrato nel campo data */
 #ct_date_placeholder {
   position: absolute;
-  left: 12px;
+  left: 0;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
   color: #888;
   font-style: italic;
+  text-align: center;
   pointer-events: none;
 }
 
@@ -201,7 +218,9 @@ button {
   border: none;
   font-weight: 600;
 }
+
 button:disabled { opacity: 0.6; }
+
 .hidden { display: none; }
 
 #toast {
@@ -228,6 +247,7 @@ button:disabled { opacity: 0.6; }
 }
 
 .row { display: flex; gap: 8px; }
+
 .row > div { flex: 1; }
 
 .placeholder {
@@ -236,6 +256,7 @@ button:disabled { opacity: 0.6; }
   align-items: center;
   justify-content: center;
 }
+
 .placeholder::before {
   content: attr(data-placeholder);
   color: #888;
@@ -254,7 +275,11 @@ button:disabled { opacity: 0.6; }
 
 /* Correzioni per schermi Android e telefoni stretti */
 @media screen and (max-width: 600px) {
-  #ct_container { width: 100%; min-width: 0; }
+
+  #ct_container {
+    width: 100%;
+    min-width: 0;
+  }
 
   #ct_container .row {
     display: grid;
@@ -310,30 +335,44 @@ button:disabled { opacity: 0.6; }
 </style>
 </head>
 <body>
+
 <div class="container">
 
   <!-- LOGIN -->
   <div id="boxLogin" class="card">
-    <h2 style="font-size:18px;margin-top:0;">Login</h2>
+    <h2 style="font-size:18px;margin-top:0;">Login utente</h2>
+
     <label for="selUser">Seleziona username</label>
-    <select id="selUser"><option value="">Caricamento utenti...</option></select>
-    <label for="pin">PIN (6 cifre)</label>
+    <select id="selUser">
+      <option value="">Caricamento utenti...</option>
+    </select>
+
+    <label for="pin">PIN personale (6 cifre)</label>
+
     <div style="position:relative;">
-      <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN (6 cifre)">
+      <input id="pin" type="password" inputmode="numeric"
+        autocomplete="off" placeholder="PIN personale (6 cifre)">
+
       <svg id="togglePinLogin" class="pinToggle" viewBox="0 0 24 24">
-        <path id="togglePinLoginPath" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
+        <path id="togglePinLoginPath"
+          d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
       </svg>
     </div>
+
     <button id="btnLogin">Login</button>
   </div>
 
   <!-- COMPLETAMENTO DATI -->
   <div id="boxComplete" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Completa i tuoi dati</h2>
+
     <label for="email">Email</label>
     <input id="email" type="email" placeholder="esempio@dominio.it">
+
     <label for="matricola">Matricola (5 cifre)</label>
-    <input id="matricola" type="text" inputmode="numeric" maxlength="5" placeholder="es. 01234">
+    <input id="matricola" type="text" inputmode="numeric"
+      maxlength="5" placeholder="es. 01234">
+
     <button id="btnComplete">Salva dati</button>
     <button id="btnLogout2" style="margin-top:10px;background:#c62828;">Logout</button>
   </div>
@@ -341,19 +380,27 @@ button:disabled { opacity: 0.6; }
   <!-- DASHBOARD -->
   <div id="boxDashboard" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Profilo utente</h2>
+
     <label for="d_user">Username</label>
     <input id="d_user" type="text" disabled>
-    <label for="d_pin">PIN (6 cifre)</label>
+
+    <label for="d_pin">PIN personale (6 cifre)</label>
+
     <div style="position:relative;">
       <input id="d_pin" type="password" inputmode="numeric" maxlength="6">
+
       <svg id="togglePinProfile" class="pinToggle" viewBox="0 0 24 24">
-        <path id="togglePinProfilePath" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
+        <path id="togglePinProfilePath"
+          d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
       </svg>
     </div>
+
     <label for="d_email">Email</label>
     <input id="d_email" type="email">
+
     <label for="d_mat">Matricola (5 cifre)</label>
     <input id="d_mat" type="text" inputmode="numeric" maxlength="5">
+
     <button id="btnSave">Salva</button>
     <button id="btnLogout" style="margin-top:10px;background:#c62828;">Logout</button>
     <button id="btnCambioTurno" style="margin-top:10px;background:#455a64;">Cambio turno</button>
@@ -362,11 +409,16 @@ button:disabled { opacity: 0.6; }
   <!-- CAMBIO TURNO -->
   <div id="boxCambioTurno" class="card hidden">
     <h2 style="font-size:18px;margin-top:0;">Inserimento cambio turno</h2>
+
     <div class="ct_date_wrap" style="margin-bottom:15px;">
-      <input id="ct_date" class="is-empty" type="date" style="margin-bottom:0;background:#fff;">
+      <input id="ct_date" class="is-empty" type="date"
+        style="margin-bottom:0;background:#fff;">
+
       <span id="ct_date_placeholder">seleziona una data</span>
     </div>
+
     <div id="ct_container"></div>
+
     <button id="ct_addUser" style="background:#607d8b;margin-top:10px;">Aggiungi collega</button>
     <button id="ct_save" style="background:#1976d2;margin-top:10px;">Genera riepilogo</button>
     <button id="ct_reset" style="background:#b71c1c;margin-top:10px;">Reset campi</button>
@@ -374,20 +426,37 @@ button:disabled { opacity: 0.6; }
 
   <!-- RIEPILOGO -->
   <div id="boxRiepilogo" class="card hidden">
-    <h2 style="font-size:18px;margin-top:0;">Riepilogo</h2>
-    <div id="ct_emails" style="margin-top:15px;font-size:14px;color:#333;padding:12px;border:1px solid #ccc;border-radius:8px;background:#fafafa;white-space:normal;word-break:break-all;"></div>
+    <h2 style="font-size:18px;margin-top:0;">Riepilogo email</h2>
+
+    <div id="ct_emails"
+      style="margin-top:15px;font-size:14px;color:#333;padding:12px;border:1px solid #ccc;border-radius:8px;background:#fafafa;white-space:normal;word-break:break-all;">
+    </div>
+
     <button id="ct_copyEmails" style="background:#009688;margin-top:10px;">Copia destinatari</button>
-    <div id="ct_output" style="margin-top:15px;font-size:14px;color:#333;padding:12px;border:1px solid #ccc;border-radius:8px;background:#fafafa;white-space:pre-line;"></div>
+
+    <div id="ct_output"
+      style="margin-top:15px;font-size:14px;color:#333;padding:12px;border:1px solid #ccc;border-radius:8px;background:#fafafa;white-space:pre-line;">
+    </div>
+
     <button id="ct_copy" style="background:#009688;margin-top:10px;">Copia corpo mail</button>
     <button id="ct_sendMail" style="background:#00796b;margin-top:10px;">Crea email</button>
-    <button id="ct_backProfile" class="hidden" style="background:#455a64;margin:20px auto;display:block;width:90%;max-width:420px;">Profilo utente</button>
+
+    <button id="ct_backProfile" class="hidden"
+      style="background:#455a64;margin:20px auto;display:block;width:90%;max-width:420px;">
+      Profilo utente
+    </button>
   </div>
+
 </div>
 
 <div id="toast"></div>
+
 <script src="script.js"></script>
-<div id="loaderOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.85);display:none;align-items:center;justify-content:center;font-size:18px;color:#333;z-index:9999;backdrop-filter:blur(2px);">
+
+<div id="loaderOverlay"
+  style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.85);display:none;align-items:center;justify-content:center;font-size:18px;color:#333;z-index:9999;backdrop-filter:blur(2px);">
   Ripristino sessione in corso…
 </div>
+
 </body>
 </html>
