@@ -688,14 +688,26 @@ function updateRealTurns() {
 // nel formato: giorno della settimana gg/mm/aaaa
 function updateDateDisplay() {
   const dateText = document.getElementById("ct_date_text");
+  const datePlaceholder = document.getElementById("ct_date_placeholder");
 
-  if (!ct_date.value) {
+  const hasDate = !!ct_date.value;
+
+  // Gestione stato campo vuoto
+  ct_date.classList.toggle("is-empty", !hasDate);
+
+  // Gestione placeholder
+  datePlaceholder.classList.toggle("hidden", hasDate);
+
+  // Gestione data formattata
+  if (!hasDate) {
     dateText.classList.add("hidden");
     dateText.textContent = "";
     return;
   }
 
-  const date = new Date(ct_date.value);
+  // Parsing locale della data, senza conversioni UTC
+  const [yyyy, mm, dd] = ct_date.value.split("-").map(Number);
+  const date = new Date(yyyy, mm - 1, dd);
 
   const giorni = [
     "domenica",
@@ -709,11 +721,12 @@ function updateDateDisplay() {
 
   const giorno = giorni[date.getDay()];
 
-  const dd = String(date.getDate()).padStart(2, "0");
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const yyyy = date.getFullYear();
+  const giornoNum = String(dd).padStart(2, "0");
+  const meseNum = String(mm).padStart(2, "0");
 
-  dateText.textContent = `${giorno} ${dd}/${mm}/${yyyy}`;
+  dateText.textContent =
+    `${giorno} ${giornoNum}/${meseNum}/${yyyy}`;
+
   dateText.classList.remove("hidden");
 }
 
