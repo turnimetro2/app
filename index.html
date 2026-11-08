@@ -189,10 +189,30 @@ input:disabled { background: #eee; }
 }
 
 /* Il testo nativo della data viene nascosto */
-#ct_date,
-#ct_date.is-empty {
+#ct_date {
   color: transparent !important;
   text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Placeholder sempre sopra il campo data */
+#ct_date_placeholder {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Data formattata */
+#ct_date_text {
+  z-index: 2;
 }
 
 /* Testo formattato mostrato dentro il campo data */
@@ -227,10 +247,6 @@ input:disabled { background: #eee; }
   font-style: italic;
   text-align: center;
   pointer-events: none;
-}
-
-#ct_date:not(.is-empty) + #ct_date_placeholder {
-  display: none;
 }
 
 button {
