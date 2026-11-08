@@ -682,6 +682,39 @@ function updateRealTurns() {
   });
 }
 
+// Mostra la data selezionata nel formato:
+// giorno della settimana gg/mm/aaaa
+function updateDateDisplay() {
+  const display = document.getElementById("ct_date_display");
+
+  if (!ct_date.value) {
+    display.classList.add("hidden");
+    display.textContent = "";
+    return;
+  }
+
+  const date = new Date(ct_date.value);
+
+  const giorni = [
+    "domenica",
+    "lunedì",
+    "martedì",
+    "mercoledì",
+    "giovedì",
+    "venerdì",
+    "sabato"
+  ];
+
+  const giorno = giorni[date.getDay()];
+
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+
+  display.textContent = `${giorno} ${dd}/${mm}/${yyyy}`;
+  display.classList.remove("hidden");
+}
+
 function showCambioTurno() {
   boxDashboard.classList.add("hidden");
   boxCambioTurno.classList.remove("hidden");
@@ -1005,6 +1038,9 @@ function resetCambioTurno() {
   ];
 
   ct_date.value = "";
+
+  updateDateDisplay();
+
   const datePlaceholder = document.getElementById("ct_date_placeholder");
   if (datePlaceholder) datePlaceholder.classList.remove("hidden");
 
@@ -1022,6 +1058,8 @@ ct_date.addEventListener("change", () => {
 
   const datePlaceholder = document.getElementById("ct_date_placeholder");
   if (datePlaceholder) datePlaceholder.classList.toggle("hidden", !!ct_date.value);
+
+  updateDateDisplay();
 
   clearRiepilogo();
 
