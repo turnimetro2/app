@@ -212,6 +212,19 @@ input:disabled { background: #eee; }
   display: none;
 }
 
+/* Data selezionata: giorno della settimana + data */
+.ct_date_display {
+  margin-top: 8px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: #222;
+}
+
+.ct_date_display.hidden {
+  display: none;
+}
+
 button {
   background: #1976d2;
   color: #fff;
@@ -415,6 +428,8 @@ button:disabled { opacity: 0.6; }
         style="margin-bottom:0;background:#fff;">
 
       <span id="ct_date_placeholder">seleziona una data</span>
+
+      <div id="ct_date_display" class="ct_date_display hidden"></div>
     </div>
 
     <div id="ct_container"></div>
