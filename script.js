@@ -1067,111 +1067,126 @@ function resetCambioTurno() {
 
 
 // ===== INIT =====
+
+// ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
 
-ct_date.addEventListener("change", () => {
+  // ===== GESTIONE CAMPO DATA =====
 
-  const datePlaceholder = document.getElementById("ct_date_placeholder");
-  if (datePlaceholder) datePlaceholder.classList.toggle("hidden", !!ct_date.value);
+  ct_date.addEventListener("change", () => {
 
-  updateDateDisplay();
+    updateDateDisplay();
+    clearRiepilogo();
 
-  clearRiepilogo();
+    renderCambioTurno();
+    updateRealTurns();
 
-  renderCambioTurno();
-  updateRealTurns();
+    if (!ct_date.value) return;
 
-  const today = new Date();
-  const selected = new Date(ct_date.value);
+    const [yyyy, mm, dd] = ct_date.value.split("-").map(Number);
+    const selected = new Date(yyyy, mm - 1, dd);
 
-  const min = new Date();
-  min.setDate(today.getDate() + 6);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const max = new Date();
-  max.setDate(today.getDate() + 20);
+    const min = new Date(today);
+    min.setDate(today.getDate() + 6);
 
-  if (selected < min || selected > max) {
-    toast("Attenzione!\n la data selezionata è fuori dal range 7–20 giorni da oggi");
-  }
-});
+    const max = new Date(today);
+    max.setDate(today.getDate() + 20);
 
-ct_date.addEventListener("input", () => {
-  const datePlaceholder = document.getElementById("ct_date_placeholder");
-  if (datePlaceholder) datePlaceholder.classList.toggle("hidden", !!ct_date.value);
+    if (selected < min || selected > max) {
+      toast("Attenzione!\n la data selezionata è fuori dal range 7–20 giorni da oggi");
+    }
+  });
 
-  updateDateDisplay();
+  ct_date.addEventListener("input", () => {
 
-  clearRiepilogo();
-  updateRealTurns();
-});
+    updateDateDisplay();
+    clearRiepilogo();
+    updateRealTurns();
+
+  });
 
 
-document.getElementById("togglePinLogin").addEventListener("click", () => {
-  togglePasswordVisibility(pin, togglePinLogin, togglePinLoginPath);
-});
+  // ===== VISIBILITÀ PIN =====
 
-document.getElementById("togglePinProfile").addEventListener("click", () => {
-  togglePasswordVisibility(d_pin, togglePinProfile, togglePinProfilePath);
-});
+  document.getElementById("togglePinLogin").addEventListener("click", () => {
+    togglePasswordVisibility(pin, togglePinLogin, togglePinLoginPath);
+  });
 
-  
+  document.getElementById("togglePinProfile").addEventListener("click", () => {
+    togglePasswordVisibility(d_pin, togglePinProfile, togglePinProfilePath);
+  });
+
+
+  // ===== INVIO EMAIL =====
+
   const ct_sendMail = document.getElementById("ct_sendMail");
-ct_sendMail.addEventListener("click", sendCambioTurnoEmail);
+  ct_sendMail.addEventListener("click", sendCambioTurnoEmail);
+
+
+  // ===== CACHE ELEMENTI =====
 
   window.boxRiepilogo = document.getElementById("boxRiepilogo");
-window.ct_backProfile = document.getElementById("ct_backProfile");
+  window.ct_backProfile = document.getElementById("ct_backProfile");
 
-  // cache elementi
-  window.boxLogin       = document.getElementById("boxLogin");
-  window.boxComplete    = document.getElementById("boxComplete");
-  window.boxDashboard   = document.getElementById("boxDashboard");
+  window.boxLogin = document.getElementById("boxLogin");
+  window.boxComplete = document.getElementById("boxComplete");
+  window.boxDashboard = document.getElementById("boxDashboard");
   window.boxCambioTurno = document.getElementById("boxCambioTurno");
 
-  window.selUser   = document.getElementById("selUser");
-  window.pin       = document.getElementById("pin");
-  window.email     = document.getElementById("email");
+  window.selUser = document.getElementById("selUser");
+  window.pin = document.getElementById("pin");
+  window.email = document.getElementById("email");
   window.matricola = document.getElementById("matricola");
 
   window.d_user = document.getElementById("d_user");
-  window.d_pin  = document.getElementById("d_pin");
+  window.d_pin = document.getElementById("d_pin");
   window.d_email = document.getElementById("d_email");
-  window.d_mat   = document.getElementById("d_mat");
+  window.d_mat = document.getElementById("d_mat");
 
   window.ct_container = document.getElementById("ct_container");
-  window.ct_output    = document.getElementById("ct_output");
-  window.ct_emails    = document.getElementById("ct_emails");
+  window.ct_output = document.getElementById("ct_output");
+  window.ct_emails = document.getElementById("ct_emails");
+
+
+  // ===== INIZIALIZZAZIONE RIEPILOGO E DATA =====
 
   clearRiepilogo();
 
+  // Inizializza placeholder e visualizzazione data
+  updateDateDisplay();
 
-  const btnLogin       = document.getElementById("btnLogin");
-  const btnComplete    = document.getElementById("btnComplete");
-  const btnSave        = document.getElementById("btnSave");
+
+  // ===== PULSANTI =====
+
+  const btnLogin = document.getElementById("btnLogin");
+  const btnComplete = document.getElementById("btnComplete");
+  const btnSave = document.getElementById("btnSave");
 
   d_pin.addEventListener("input", checkDashboardChanges);
-d_email.addEventListener("input", checkDashboardChanges);
-d_mat.addEventListener("input", checkDashboardChanges);
+  d_email.addEventListener("input", checkDashboardChanges);
+  d_mat.addEventListener("input", checkDashboardChanges);
 
-  
   const btnLogout = document.getElementById("btnLogout");
   const btnCambioTurno = document.getElementById("btnCambioTurno");
-  const ct_addUser     = document.getElementById("ct_addUser");
-  const ct_save        = document.getElementById("ct_save");
-  const ct_copy        = document.getElementById("ct_copy");
-  const ct_copyEmails  = document.getElementById("ct_copyEmails");
-  const ct_resetBtn    = document.getElementById("ct_reset");
+  const ct_addUser = document.getElementById("ct_addUser");
+  const ct_save = document.getElementById("ct_save");
+  const ct_copy = document.getElementById("ct_copy");
+  const ct_copyEmails = document.getElementById("ct_copyEmails");
+  const ct_resetBtn = document.getElementById("ct_reset");
 
   const ct_backProfile = document.getElementById("ct_backProfile");
-ct_backProfile.addEventListener("click", backToProfile);
+  ct_backProfile.addEventListener("click", backToProfile);
 
-  
-const btnLogout2 = document.getElementById("btnLogout2");
-btnLogout2.addEventListener("click", doLogout);
-  
+  const btnLogout2 = document.getElementById("btnLogout2");
+  btnLogout2.addEventListener("click", doLogout);
+
   btnLogin.addEventListener("click", doLogin);
   btnComplete.addEventListener("click", doComplete);
   btnSave.addEventListener("click", doSaveDashboard);
-  btnLogout.addEventListener("click", doLogout);  // <--- AGGIUNTO
+  btnLogout.addEventListener("click", doLogout);
 
   btnCambioTurno.addEventListener("click", showCambioTurno);
 
@@ -1181,7 +1196,12 @@ btnLogout2.addEventListener("click", doLogout);
   ct_copyEmails.addEventListener("click", copyCambioTurnoEmails);
   ct_resetBtn.addEventListener("click", resetCambioTurno);
 
+
+  // ===== AVVIO APPLICAZIONE =====
+
   loadUsers();
 
   restoreSession();
+
 });
+
