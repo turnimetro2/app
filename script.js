@@ -707,15 +707,11 @@ function renderCambioTurno() {
     row.className = "row";
 
     const colUser = document.createElement("div");
-    if (index === 0) {
-      colUser.innerHTML = `<input type="text" value="${currentUser.username}" disabled>`;
-    } else {
-      let options = `<option value="">Seleziona collega</option>`;
-      allUsers.forEach(name => {
-        options += `<option value="${name}" ${name === u.user ? "selected" : ""}>${name}</option>`;
-      });
-      colUser.innerHTML = `<select data-index="${index}" class="ct_user">${options}</select>`;
-    }
+    let options = `<option value="">Seleziona collega</option>`;
+    allUsers.forEach(name => {
+      options += `<option value="${name}" ${name === u.user ? "selected" : ""}>${name}</option>`;
+    });
+    colUser.innerHTML = `<select data-index="${index}" class="ct_user">${options}</select>`;
 
 const turnoCiclazione =
   ct_date.value && u.user
@@ -1008,7 +1004,9 @@ function resetCambioTurno() {
     { user: "", turno: "" }
   ];
 
-  ct_date.value = "";        
+  ct_date.value = "";
+  const datePlaceholder = document.getElementById("ct_date_placeholder");
+  if (datePlaceholder) datePlaceholder.classList.remove("hidden");
 
   clearRiepilogo();   // 🔥 aggiungi questo
 
@@ -1021,6 +1019,9 @@ function resetCambioTurno() {
 document.addEventListener("DOMContentLoaded", () => {
 
 ct_date.addEventListener("change", () => {
+
+  const datePlaceholder = document.getElementById("ct_date_placeholder");
+  if (datePlaceholder) datePlaceholder.classList.toggle("hidden", !!ct_date.value);
 
   clearRiepilogo();
 
@@ -1042,6 +1043,8 @@ ct_date.addEventListener("change", () => {
 });
 
 ct_date.addEventListener("input", () => {
+  const datePlaceholder = document.getElementById("ct_date_placeholder");
+  if (datePlaceholder) datePlaceholder.classList.toggle("hidden", !!ct_date.value);
   clearRiepilogo();
   updateRealTurns();
 });
