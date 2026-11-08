@@ -561,6 +561,8 @@ function doLogout() {
   ct_emails.innerHTML = "";
   ct_date.value = "";
 
+  updateDateDisplay();
+
   showLogin();
   toast("Logout effettuato");
 }
@@ -682,14 +684,14 @@ function updateRealTurns() {
   });
 }
 
-// Mostra la data selezionata nel formato:
-// giorno della settimana gg/mm/aaaa
+// Mostra la data selezionata DENTRO il campo data
+// nel formato: giorno della settimana gg/mm/aaaa
 function updateDateDisplay() {
-  const display = document.getElementById("ct_date_display");
+  const dateText = document.getElementById("ct_date_text");
 
   if (!ct_date.value) {
-    display.classList.add("hidden");
-    display.textContent = "";
+    dateText.classList.add("hidden");
+    dateText.textContent = "";
     return;
   }
 
@@ -711,8 +713,8 @@ function updateDateDisplay() {
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const yyyy = date.getFullYear();
 
-  display.textContent = `${giorno} ${dd}/${mm}/${yyyy}`;
-  display.classList.remove("hidden");
+  dateText.textContent = `${giorno} ${dd}/${mm}/${yyyy}`;
+  dateText.classList.remove("hidden");
 }
 
 function showCambioTurno() {
@@ -1083,6 +1085,9 @@ ct_date.addEventListener("change", () => {
 ct_date.addEventListener("input", () => {
   const datePlaceholder = document.getElementById("ct_date_placeholder");
   if (datePlaceholder) datePlaceholder.classList.toggle("hidden", !!ct_date.value);
+
+  updateDateDisplay();
+
   clearRiepilogo();
   updateRealTurns();
 });
