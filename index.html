@@ -188,11 +188,32 @@ input:disabled { background: #eee; }
   width: 100%;
 }
 
-/* Il testo della data deve restare visibile anche dopo la selezione */
+/* Il testo nativo della data viene nascosto */
 #ct_date,
 #ct_date.is-empty {
-  color: #222 !important;
+  color: transparent !important;
   text-align: center;
+}
+
+/* Testo formattato mostrato dentro il campo data */
+#ct_date_text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #222;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#ct_date_text.hidden {
+  display: none;
 }
 
 /* Placeholder centrato nel campo data */
@@ -209,19 +230,6 @@ input:disabled { background: #eee; }
 }
 
 #ct_date:not(.is-empty) + #ct_date_placeholder {
-  display: none;
-}
-
-/* Data selezionata: giorno della settimana + data */
-.ct_date_display {
-  margin-top: 8px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 16px;
-  color: #222;
-}
-
-.ct_date_display.hidden {
   display: none;
 }
 
@@ -429,7 +437,7 @@ button:disabled { opacity: 0.6; }
 
       <span id="ct_date_placeholder">seleziona una data</span>
 
-      <div id="ct_date_display" class="ct_date_display hidden"></div>
+      <span id="ct_date_text" class="hidden"></span>
     </div>
 
     <div id="ct_container"></div>
